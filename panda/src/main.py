@@ -1,18 +1,23 @@
 from database import MongoDBConnect
 import random
 import time
+import threading
+import pymongo
+from pymongo import MongoClient
+import logging
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.preprocessing import normalize
 
 MAX_DETECTORS = 1000
 DETECTOR_LENGTH = 32
-INITIAL_DETECTOR_LIFESPAN = 3600
+INITIAL_DETECTOR_LIFESPAN = 300
 IMMATURE_DETECTOR_LIFESPAN = 604800
 MATURE_DETECTOR_LIFESPAN = 2592000
 MEMORY_DETECTOR_LIFESPAN = 31536000
 CURRENT_DETECTORS = ""
 
 DB = MongoDBConnect()
+
 
 def generate_detector():
     # Variable to store the
@@ -60,39 +65,90 @@ def generate_initial_detectors():
 
 
 def evaluate_lifespans():
-    num_detectors = len(CURRENT_DETECTORS)
-    while (num_detectors < MAX_DETECTORS):
-        add_detector()
+    print('Detector lifespan evaluation started')
+    while True:
         num_detectors = len(CURRENT_DETECTORS)
+        while (num_detectors < MAX_DETECTORS):
+            add_detector()
+            num_detectors = len(CURRENT_DETECTORS)
 
-    keys = []
+        keys = []
 
-    for k in CURRENT_DETECTORS.keys():
-        keys.append(k)
+        for k in CURRENT_DETECTORS.keys():
+            keys.append(k)
 
-    sum = 0
-    for key in keys:
-        value = CURRENT_DETECTORS[key]
-        lifetime = time.time() - value['LIFE']
-        if value['TYPE'] == 'INITIAL':
-            if lifetime > INITIAL_DETECTOR_LIFESPAN:
-                remove_detector(value)
-                sum += 1
-        elif value['TYPE'] == 'IMMATURE':
-            if lifetime > IMMATURE_DETECTOR_LIFESPAN:
-                remove_detector(value)
-                sum += 1
-        elif value['TYPE'] == 'MATURE':
-            if lifetime > MATURE_DETECTOR_LIFESPAN:
-                remove_detector(value)
-                sum += 1
-        elif value['TYPE'] == 'MEMORY':
-            if lifetime > MEMORY_DETECTOR_LIFESPAN:
-                remove_detector(value)
-                sum += 1
+        sum = 0
+        for key in keys:
+            value = CURRENT_DETECTORS[key]
+            lifetime = time.time() - value['LIFE']
+            if value['TYPE'] == 'INITIAL':
+                if lifetime > INITIAL_DETECTOR_LIFESPAN:
+                    remove_detector(value)
+                    sum += 1
+            elif value['TYPE'] == 'IMMATURE':
+                if lifetime > IMMATURE_DETECTOR_LIFESPAN:
+                    remove_detector(value)
+                    sum += 1
+            elif value['TYPE'] == 'MATURE':
+                if lifetime > MATURE_DETECTOR_LIFESPAN:
+                    remove_detector(value)
+                    sum += 1
+            elif value['TYPE'] == 'MEMORY':
+                if lifetime > MEMORY_DETECTOR_LIFESPAN:
+                    remove_detector(value)
+                    sum += 1
 
-    if (sum > 0):
-        print('{:d} detectors were replaced'.format(sum))
+        if sum > 0:
+            print('{:d} detectors were replaced'.format(sum))
+
+
+def update_detectors_callback():
+    try:
+        resume_token = None
+        pipeline = [{'$match': {'operationType': 'update'}}]
+        with DB.get_collection().watch(pipeline=pipeline, full_document='updateLookup') as stream:
+            for update_change in stream:
+                # print(insert_change)
+                detector = update_change['fullDocument']
+                CURRENT_DETECTORS[detector['_id']] = detector
+                resume_token = stream.resume_token
+    except pymongo.errors.PyMongoError as error:
+        # The ChangeStream encountered an unrecoverable error or the
+        # resume attempt failed to recreate the cursor.
+        if resume_token is None:
+            # There is no usable resume token because there was a
+            # failure during ChangeStream initialization.
+            logging.error('...' + str(error))
+        else:
+            # Use the interrupted ChangeStream's resume token to create
+            # a new ChangeStream. The new stream will continue from the
+            # last seen insert change without missing any events.
+            with DB.get_collection().watch(
+                    pipeline, resume_after=resume_token) as stream:
+                for insert_change in stream:
+                    print(insert_change)
+
+
+class EvaluateThread (threading.Thread):
+
+    def __init__(self, threadID, name):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+
+    def run(self):
+        evaluate_lifespans()
+
+
+class UpdateThread (threading.Thread):
+
+    def __init__(self, threadID, name):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+
+    def run(self):
+        update_detectors_callback()
 
 
 if __name__ == "__main__":
@@ -100,10 +156,17 @@ if __name__ == "__main__":
 
     print('Generating initial detectors')
     generate_initial_detectors()
-    print('Finished generating initial detectors\n')
+    print('Finished generating initial detectors')
 
-    print('Detector lifespan evaluation started')
-    while True:
-        evaluate_lifespans()
+    evaluation_thread = EvaluateThread(1, "EvaluationThread")
+    evaluation_thread.start()
+
+    update_thread = UpdateThread(2, "UpdateThread")
+    update_thread.start()
+
+    print("Still running")
+
+    evaluation_thread.join()
+    update_thread.join()
 
 

@@ -2,17 +2,15 @@
 #Instantiate object
 
 from pymongo import MongoClient
-from pprint import pprint
 import numpy as np
-import math
 
 
 class MongoDBConnect:
 
     def __init__(self):
         # connect to MongoDB
-        self.client = MongoClient("mongodb+srv://root:root@cluster0-mns8t.mongodb.net/test")
-        self.db = self.client["blacksite"]
+        client = MongoClient("mongodb://localhost:27017/COMP895-Brown?readPreference=primary&appname=MongoDB%20Compass&ssl=false")
+        self.db = client["blacksite"]
         self.col = self.db["detectors"]
 
     def get_all(self):
@@ -34,7 +32,7 @@ class MongoDBConnect:
         newvalues = {"$set": {"TYPE": detector["TYPE"]}}
         self.col.update_one(myquery, newvalues)
 
-        # print("Database update successful")
+        print("Database update successful")
 
     def add_detector(self, detector):
         d = self.col.insert_one(detector)
@@ -43,6 +41,3 @@ class MongoDBConnect:
     def delete_detector(self, detector):
         d = self.col.delete_one(detector)
         return d
-
-    def get_collection(self):
-        return self.col
