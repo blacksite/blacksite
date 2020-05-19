@@ -20,12 +20,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e91239d5-e2b0-497b-8183-b803cdfdddd2" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../grizzly/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../grizzly/.idea/grizzly.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../grizzly/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../grizzly/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../grizzly/src/database.py" beforeDir="false" afterPath="$PROJECT_DIR$/../grizzly/src/database.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../grizzly/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../grizzly/src/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/database.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/database.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../panda/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../panda/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,12 +48,12 @@
   </component>
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../grizzly" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
   </component>
   <component name="RunManager" selected="Python.main">
     <configuration name="database" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="panda" />
+      <module name="grizzly" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -76,7 +74,7 @@
       <method v="2" />
     </configuration>
     <configuration name="fedatabase" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="panda" />
+      <module name="grizzly" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -97,7 +95,7 @@
       <method v="2" />
     </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="panda" />
+      <module name="grizzly" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -118,7 +116,7 @@
       <method v="2" />
     </configuration>
     <configuration name="pcaextraction" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="panda" />
+      <module name="grizzly" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -177,10 +175,10 @@
       <screen x="0" y="0" width="1620" height="1040" />
     </state>
     <state x="547" y="322" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1620.1040@0.0.1620.1040" timestamp="1589857949632" />
-    <state x="591" y="275" key="FileChooserDialogImpl" timestamp="1589908177555">
+    <state x="591" y="275" key="FileChooserDialogImpl" timestamp="1589855941038">
       <screen x="0" y="0" width="1620" height="1040" />
     </state>
-    <state x="591" y="275" key="FileChooserDialogImpl/0.0.1620.1040@0.0.1620.1040" timestamp="1589908177555" />
+    <state x="591" y="275" key="FileChooserDialogImpl/0.0.1620.1040@0.0.1620.1040" timestamp="1589855941038" />
     <state width="1600" height="348" key="GridCell.Tab.0.bottom" timestamp="1589865858905">
       <screen x="0" y="0" width="1620" height="1040" />
     </state>

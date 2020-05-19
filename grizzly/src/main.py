@@ -1,67 +1,149 @@
 from database import MongoDBConnect
+import random
+import time
+import threading
+import pymongo
+from pymongo import MongoClient
+import logging
+from sklearn.feature_selection import VarianceThreshold
+from sklearn.preprocessing import normalize
 
 DB = MongoDBConnect()
-DNN = ''
-CURRENT_DETECTORS = ''
-
-
-def get_detectors():
-    print('Getting detectors')
-
-
-def train_detectors():
-    print('Training detectors')
+DNN = None
+LOCK = threading.Lock()
 
 
 def train_dnn():
     print('Training DNN')
 
 
-def test_dnn():
+def test_dnn(dataset):
     print('Testing DNN')
 
 
-def print_dnn_results():
-    # Print DNN results
-    print(CURRENT_DETECTORS)
+def load_dnn(filename):
+    print('Loading DNN')
 
 
-def save_dnn():
-    print('Saving DNN')
+def get_detector(_id):
+    return DB.get_one(_id, DB.get_detectors_collection())
 
 
-def read_dnn():
-    print('Reading DNN')
+def evaluate_new_instances():
+    try:
+        resume_token = None
+        pipeline = [{'$match': {'operationType': 'insert'}}]
+        with DB.get_new_instance_collection().watch(pipeline) as stream:
+            for insert_change in stream:
+                # print(insert_change)
+                instance = insert_change['fullDocument']
+                detector = get_detector(instance['detector'])
+
+                if DNN:
+                    # Evaluate instance['Value']
+                    classification = None
+
+                    if classification > 0.5:
+                        if detector['TYPE'] == 'IMMATURE':
+                            detector['TYPE'] == 'MATURE'
+                            DB.update_detector(detector)
+
+                        DB.add_suspicious_instance(instance)
+
+                    DB.remove_new_instance(instance)
+                else:
+                    print("No DNN available")
+                    exit(-1)
+
+                resume_token = stream.resume_token
+    except pymongo.errors.PyMongoError as error:
+        # The ChangeStream encountered an unrecoverable error or the
+        # resume attempt failed to recreate the cursor.
+        if resume_token is None:
+            # There is no usable resume token because there was a
+            # failure during ChangeStream initialization.
+            logging.error('...' + str(error))
+        else:
+            # Use the interrupted ChangeStream's resume token to create
+            # a new ChangeStream. The new stream will continue from the
+            # last seen insert change without missing any events.
+            with DB.get_collection().watch(
+                    pipeline, resume_after=resume_token) as stream:
+                for insert_change in stream:
+                    print(insert_change)
+
+                    instance = insert_change['fullDocument']
+                    detector = get_detector(instance['detector'])
+
+                    # Evaluate instance['Value']
+                    LOCK.acquire()
+                    classification = DNN
+                    LOCK.release()
+
+                    if classification > 0.5:
+                        if detector['TYPE'] == 'IMMATURE':
+                            detector['TYPE'] == 'MATURE'
+                            DB.update_detector(detector)
+
+                        DB.add_suspicious_instance(instance)
+
+                    DB.remove_new_instance(instance)
 
 
-def delete_dnn():
-    print('Deleting DNN')
+class EvaluateNewInstance (threading.Thread):
+
+    def __init__(self, threadID, name):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+
+    def run(self):
+        evaluate_new_instances()
+
+
+class TrainDNN (threading.Thread):
+
+    def __init__(self, threadID, name):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+
+    def run(self):
+        temp = train_dnn()
+        LOCK.acquire()
+        DNN = temp
+        LOCK.release()
 
 
 if __name__ == "__main__":
-    option = input('0: Read from file\n1: Create & train new Deep Neural Network\n')
+    option = input(
+        '0: Load Deep Neural Network\n'
+        '1: Train New Deep Neural Network\n'
+    )
 
     while True:
         if option == 0:
-            filename = input('Enter filename')
-            read_dnn()
+            load_dnn('Test')
             break
         elif option == 1:
             train_dnn()
-            test = input('0: Test DNN\n1: Do not test DNN\n')
-            while True:
-                if test == 0:
-                    test_dnn()
-                elif test == 1:
-                    break
-                else:
-                    print('Invalid input')
-                    test = input('0: Test DNN\n1: Do not test DNN\n')
             break
         else:
             print('Invalid input')
-            option = input('0: Read from file\n1: Create & train new Deep Neural Network\n')
+            option = input(
+                '0: Load Deep Neural Network\n'
+                '1: Train New Deep Neural Network\n'
+            )
 
-    train_detectors()
+    evaluation_thread = EvaluateThread(1, "EvaluationThread")
+    evaluation_thread.start()
+
+    update_thread = UpdateThread(2, "UpdateThread")
+    update_thread.start()
+
+    print("Still running")
+
+    evaluation_thread.join()
+    update_thread.join()
 
 
