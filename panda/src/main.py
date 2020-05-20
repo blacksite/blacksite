@@ -3,10 +3,7 @@ import random
 import time
 import threading
 import pymongo
-from pymongo import MongoClient
 import logging
-from sklearn.feature_selection import VarianceThreshold
-from sklearn.preprocessing import normalize
 
 MAX_DETECTORS = 1000
 DETECTOR_LENGTH = 32
@@ -64,7 +61,7 @@ def generate_initial_detectors():
         print('{:.2f}%'.format(float(num_detectors)/MAX_DETECTORS*100))
 
 
-def evaluate_lifespans():
+def evaluate_detector_lifespans():
     print('Detector lifespan evaluation started')
     while True:
         num_detectors = len(CURRENT_DETECTORS)
@@ -129,7 +126,22 @@ def update_detectors_callback():
                     print(insert_change)
 
 
-class EvaluateThread (threading.Thread):
+def delete_detectors_callback():
+
+
+
+def evaluate_initial_new_instances():
+    print('Evaluating resident new instances')
+
+
+def evaluate_new_instances_callback():
+    print('Evaluation new instances')
+
+
+
+
+
+class EvaluateDetectorLifespanThread (threading.Thread):
 
     def __init__(self, threadID, name):
         threading.Thread.__init__(self)
@@ -137,7 +149,7 @@ class EvaluateThread (threading.Thread):
         self.name = name
 
     def run(self):
-        evaluate_lifespans()
+        evaluate_detector_lifespans()
 
 
 class UpdateThread (threading.Thread):
@@ -158,7 +170,7 @@ if __name__ == "__main__":
     generate_initial_detectors()
     print('Finished generating initial detectors')
 
-    evaluation_thread = EvaluateThread(1, "EvaluationThread")
+    evaluation_thread = EvaluateDetectorLifespanThread(1, "EvaluateDetectorLifespanThread")
     evaluation_thread.start()
 
     update_thread = UpdateThread(2, "UpdateThread")
