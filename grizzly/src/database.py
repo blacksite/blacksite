@@ -14,14 +14,28 @@ class MongoDBConnect:
         self.client = MongoClient("mongodb+srv://root:root@cluster0-mns8t.mongodb.net/test")
         self.db = self.client["blacksite"]
 
-    def get_all(self, col):
-        temp = list(col.find())
+    def get_all_detectors(self):
+        temp = list(self.db['detectors'].find())
         detectors = {}
         for d in temp:
             temp = {'_id': d['_id'], "VALUE": d['VALUE'], "TYPE": d['TYPE'], 'LIFE': d['LIFE']}
             detectors[d["_id"]] = temp
 
         return detectors
+
+    def get_all_suspicious_instances(self):
+        temp = list(self.db['suspicious_instances'].find())
+        detectors = {}
+        for i in temp:
+            temp = {'_id': i['_id'], "VALUE": i['VALUE'], "DETECTOR_id": i['DETECTOR_id']}
+            detectors[i["_id"]] = temp
+
+        return detectors
+
+    def remove_detector(self, detector):
+        col = self.db['detectors']
+        myquery = {"_id": detector["_id"]}
+        col.delete_one(myquery)
 
     def get_one(self, _id, col):
         sample = np.array(list(col.find({"_id" : _id})))
@@ -36,12 +50,12 @@ class MongoDBConnect:
         # print("Database update successful")
 
     def remove_new_instance(self, instance):
-        col = self.db['new_instance']
+        col = self.db['new_instances']
         myquery = {"_id": instance["_id"]}
         col.delete_one(myquery)
 
     def add_suspicious_instance(self, instance):
-        col = self.db['suspicious_instance']
+        col = self.db['suspicious_instances']
         col.insert_one(instance)
 
     def get_dataset_collection(self):
@@ -51,7 +65,7 @@ class MongoDBConnect:
         return self.db['detectors']
 
     def get_suspicious_instance_collection(self):
-        return self.db['suspicious_instance']
+        return self.db['suspicious_instances']
 
     def get_new_instance_collection(self):
-        return self.db['new_instance']
+        return self.db['new_instances']
