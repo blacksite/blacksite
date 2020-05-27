@@ -1,4 +1,10 @@
 import deepneuralnetwork as dnn
+import threading
+from concurrent.futures import ThreadPoolExecutor, wait
+
+EXECUTOR = ThreadPoolExecutor(10)
+FUTURES = []
+LOCK = threading.Lock()
 
 if __name__ == "__main__":
 
@@ -25,20 +31,12 @@ if __name__ == "__main__":
     # Start the callback to watch the dataset table
     # When a threshold is reached, a new DNN is trained
     # It replaces the current DNN
-    dnn_retraining_thread = dnn.RetrainDNNThread(4, "RetrainDNNThread")
-    dnn_retraining_thread.start()
-    initial_detector_training_thread = dnn.TrainInitialDetectorsThread(1, "TrainInitialDetectorsThread")
-    initial_detector_training_thread.start()
-    detector_retraining_thread = dnn.RetrainDetectorsThread(2, "RetrainDetectorsThread")
-    detector_retraining_thread.start()
-    evaluate_initial_suspicious_instances_thread = dnn.EvaluateInitialSuspiciousInstanceThread(3, "EvaluateInitialSuspiciousInstanceThread")
-    evaluate_initial_suspicious_instances_thread.start()
-    evaluate_suspicious_instances_thread = dnn.EvaluateSuspiciousInstanceThread(4, "EvaluateSuspiciousInstanceThread")
-    evaluate_suspicious_instances_thread.start()
 
-    initial_detector_training_thread.join()
-    evaluate_initial_suspicious_instances_thread.join()
-    evaluate_suspicious_instances_thread.join()
-    dnn_training_thread.join()
-    detector_training_thread.join()
+    FUTURES.append(EXECUTOR.submit(dnn.retrain_dnn_callback))
+    FUTURES.append(EXECUTOR.submit(dnn.train_initial_detectors))
+    FUTURES.append(EXECUTOR.submit(dnn.retrain_detectors_callback))
+    FUTURES.append(EXECUTOR.submit(dnn.evaluate_initial_suspicious_instances))
+    FUTURES.append(EXECUTOR.submit(dnn.evaluate_suspicious_instances_callback))
+
+    wait(FUTURES, return_when='ALL_COMPLETED')
 

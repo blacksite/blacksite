@@ -2,10 +2,7 @@
 #Instantiate object
 
 from pymongo import MongoClient
-from pprint import pprint
 import numpy as np
-import math
-
 
 class MongoDBConnect:
 

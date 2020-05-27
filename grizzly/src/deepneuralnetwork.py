@@ -13,21 +13,21 @@ ACCURACY_THRESHOLD = 0.8
 
 def train_dnn():
     print('Training DNN')
+    temp_dnn = None
 
     accuracy = 0.0
 
     while accuracy < ACCURACY_THRESHOLD:
-        temp = None
+        # temp_dnn = new DNN
+        accuracy = test_dnn(temp_dnn)
 
-        accuracy = test_dnn(temp)
-
-    return temp
+    return temp_dnn
 
 
-def test_dnn(temp):
+def test_dnn(temp_dnn):
     print('Testing DNN')
 
-    #calculate the accuracy of temp
+    #calculate the accuracy of temp_dnn
     accuracy = None
 
     return accuracy
@@ -225,58 +225,3 @@ def retrain_dnn_callback():
                         LOCK.acquire()
                         DNN = temp
                         LOCK.release()
-
-
-class EvaluateSuspiciousInstanceThread(threading.Thread):
-
-    def __init__(self, threadID, name):
-        threading.Thread.__init__(self)
-        self.threadID = threadID
-        self.name = name
-
-    def run(self):
-        evaluate_suspicious_instances_callback()
-
-
-class EvaluateInitialSuspiciousInstanceThread(threading.Thread):
-
-    def __init__(self, threadID, name):
-        threading.Thread.__init__(self)
-        self.threadID = threadID
-        self.name = name
-
-    def run(self):
-        evaluate_initial_suspicious_instances()
-
-
-class RetrainDNNThread(threading.Thread):
-
-    def __init__(self, threadID, name):
-        threading.Thread.__init__(self)
-        self.threadID = threadID
-        self.name = name
-
-    def run(self):
-        retrain_dnn_callback()
-
-
-class RetrainDetectorsThread(threading.Thread):
-
-    def __init__(self, threadID, name):
-        threading.Thread.__init__(self)
-        self.threadID = threadID
-        self.name = name
-
-    def run(self):
-        retrain_detectors_callback()
-
-
-class TrainInitialDetectorsThread(threading.Thread):
-
-    def __init__(self, threadID, name):
-        threading.Thread.__init__(self)
-        self.threadID = threadID
-        self.name = name
-
-    def run(self):
-        train_initial_detectors()
