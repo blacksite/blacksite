@@ -71,10 +71,8 @@ class MongoDBConnect:
 
     def add_confirmation_instance(self, instance):
         col = self.db['confirmation_instances']
-        newvalues = {"VALUE": instance.get_value(), "TYPE": instance.get_type(),
-                     "DETECTOR_id": instance.get_detector_id()}
-        newvalues.update(instance.get_features())
-        col.insert_one(instance)
+        newvalues = instance.get_database_values()
+        col.insert_one(newvalues)
 
     def get_dataset_collection(self):
         return self.db['dataset']

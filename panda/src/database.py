@@ -51,7 +51,7 @@ class MongoDBConnect:
 
     def add_detector(self, detector):
         collection = self.db['detectors']
-        newvalues = {"VALUE": detector.get_value(), "TYPE": detector.get_type(), "LIFE" : detector.get_life()}
+        newvalues = detector.get_database_values()
         d = collection.insert_one(newvalues)
         return d
 
@@ -69,10 +69,8 @@ class MongoDBConnect:
 
     def add_suspicious_instance(self, instance):
         collection = self.db['suspicious_instances']
-        newvalues = {"VALUE": instance.get_value(), "TYPE": instance.get_type(),
-                     "DETECTOR_id": instance.get_detector_id()}
-        newvalues.update(instance.get_features())
-        d = collection.insert_one(newvalues)
+        newvalues = instance.get_database_values()
+        collection.insert_one(newvalues)
         return d
 
     def get_detectors_collection(self):

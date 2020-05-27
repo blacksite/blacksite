@@ -44,3 +44,8 @@ class Detector:
             return 1
         else:
             return 0
+
+    def get_database_values(self):
+        values = {"VALUE": self.get_value(), "TYPE": self.get_type(), "LIFE" : self.get_life()}
+
+        return values

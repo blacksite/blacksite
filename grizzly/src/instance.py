@@ -37,3 +37,10 @@ class Instance:
 
     def get_features(self):
         return self.FEATURES
+
+    def get_database_values(self):
+        values = {"VALUE": self.get_value(), "TYPE": self.get_type(),
+                     "DETECTOR_id": self.get_detector_id()}
+        values.update(self.get_features())
+
+        return values
