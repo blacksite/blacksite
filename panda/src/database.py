@@ -71,7 +71,6 @@ class MongoDBConnect:
         collection = self.db['suspicious_instances']
         newvalues = instance.get_database_values()
         collection.insert_one(newvalues)
-        return d
 
     def get_detectors_collection(self):
         return self.db['detectors']

@@ -13,7 +13,8 @@ from detector import Detector
 
 DB = MongoDBConnect()
 DNN = None
-LOCK = threading.Lock()
+DNN_LOCK = threading.Lock()
+DB_LOCK = threading.Lock()
 DNN_TRAINING_THRESHOLD = 30
 FILENAME = 'deepneuralnetwork.blk'
 ACCURACY_THRESHOLD = 0.8
@@ -81,15 +82,19 @@ def train_initial_detectors():
     for key, detector in detectors.items():
         if detector.get_type() == 'INITIAL':
             if DNN:
-                LOCK.acquire()
+                DNN_LOCK.acquire()
                 classification = DNN.predict(detector.get_value())
-                LOCK.release()
+                DNN_LOCK.release()
 
                 if classification < 0.5:
+                    DB_LOCK.acquire()
                     DB.remove_detector(detector)
+                    DB_LOCK.release()
                 else:
                     detector.set_type('IMMATURE')
+                    DB_LOCK.acquire()
                     DB.update_detector(detector)
+                    DB_LOCK.release()
             else:
                 print("No DNN available")
                 exit(-1)
@@ -108,15 +113,19 @@ def retrain_detectors_callback():
                 detector = Detector(value['_id'], value['VALUE'], value['TYPE'], value['LIFE'])
                 if detector.get_type() == 'INITIAL':
                     if DNN:
-                        LOCK.acquire()
+                        DNN_LOCK.acquire()
                         classification = DNN.predict(detector.get_value())
-                        LOCK.release()
+                        DNN_LOCK.release()
 
                         if classification < 0.5:
+                            DB_LOCK.acquire()
                             DB.remove_detector(detector)
+                            DB_LOCK.release()
                         else:
                             detector.set_type('IMMATURE')
+                            DB_LOCK.acquire()
                             DB.update_detector_type(detector)
+                            DB_LOCK.release()
                     else:
                         print("No DNN available")
                         exit(-1)
@@ -132,18 +141,54 @@ def retrain_detectors_callback():
                     detector = Detector(value['_id'], value['VALUE'], value['TYPE'], value['LIFE'])
                     if detector.get_type() == 'INITIAL':
                         if DNN:
-                            LOCK.acquire()
+                            DNN_LOCK.acquire()
                             classification = DNN.predict(detector.get_value())
-                            LOCK.release()
+                            DNN_LOCK.release()
 
                             if classification < 0.5:
+                                DB_LOCK.acquire()
                                 DB.remove_detector(detector)
+                                DB_LOCK.release()
                             else:
                                 detector.set_type('IMMATURE')
+                                DB_LOCK.acquire()
                                 DB.update_detector_type(detector)
+                                DB_LOCK.release()
                         else:
                             print("No DNN available")
                             exit(-1)
+
+
+def classify_instance(suspicious_instance):
+    if DNN:
+        detector = DB.get_single_detector(suspicious_instance.get_detector_id())
+
+        if DNN:
+            DNN_LOCK.acquire()
+            classification = DNN.predict(suspicious_instance.get_value())
+            DNN_LOCK.release()
+
+            if classification > 0.5:
+                if detector.get_type() == 'IMMATURE':
+                    detector.set_type('MATURE')
+                    DB_LOCK.acquire()
+                    DB.update_detector_type(detector)
+                    DB_LOCK.release()
+
+                suspicious_instance.set_type('CONFIRMATION_NEEDED')
+                DB_LOCK.acquire()
+                DB.add_confirmation_instance(suspicious_instance)
+                DB_LOCK.release()
+
+            DB_LOCK.acquire()
+            DB.remove_suspicious_instance(suspicious_instance)
+            DB_LOCK.release()
+        else:
+            print("No DNN available")
+            exit(-1)
+    else:
+        print("No DNN available")
+        exit(-1)
 
 
 def evaluate_initial_suspicious_instances():
@@ -152,29 +197,8 @@ def evaluate_initial_suspicious_instances():
     suspicious_instances = DB.get_all_suspicious_instances()
 
     for key, suspicious_instance in suspicious_instances.items():
-        if suspicious_instance.get_type() == 'INITIAL':
-            if DNN:
-                detector = DB.get_single_detector(suspicious_instance.get_detector_id())
+        classify_instance(suspicious_instance)
 
-                if DNN:
-                    LOCK.acquire()
-                    classification = DNN.predict(suspicious_instance.get_value())
-                    LOCK.release()
-
-                    if classification > 0.5:
-                        if detector.get_type() == 'IMMATURE':
-                            detector.set_type('MATURE')
-                            DB.update_detector_type(detector)
-
-                        DB.add_confirmation_instance(suspicious_instance)
-
-                    DB.remove_suspicious_instance(suspicious_instance)
-                else:
-                    print("No DNN available")
-                    exit(-1)
-            else:
-                print("No DNN available")
-                exit(-1)
 
 
 def evaluate_suspicious_instances_callback():
@@ -194,24 +218,7 @@ def evaluate_suspicious_instances_callback():
                     if key != '_id' and key != 'VALUE' and key != 'TYPE' and key != 'DETECTOR_id':
                         instance.add_feature(key, value)
 
-                detector = DB.get_single_detector(instance.get_detector_id())
-
-                if DNN:
-                    LOCK.acquire()
-                    classification = DNN.predict(instance.get_value())
-                    LOCK.release()
-
-                    if classification > 0.5:
-                        if detector.get_type() == 'IMMATURE':
-                            detector.set_type('MATURE')
-                            DB.update_detector(detector)
-
-                        DB.add_confirmation_instance(instance)
-
-                    DB.remove_suspicious_instance(instance)
-                else:
-                    print("No DNN available")
-                    exit(-1)
+                classify_instance(instance)
 
                 resume_token = stream.resume_token
     except pymongo.errors.PyMongoError as error:
@@ -227,24 +234,7 @@ def evaluate_suspicious_instances_callback():
                         if key != '_id' and key != 'VALUE' and key != 'TYPE' and key != 'DETECTOR_id':
                             instance.add_feature(key, value)
 
-                    detector = DB.get_single_detector(instance.get_detector_id())
-
-                    if DNN:
-                        LOCK.acquire()
-                        classification = DNN.predict(instance.get_value())
-                        LOCK.release()
-
-                        if classification > 0.5:
-                            if detector.get_type() == 'IMMATURE':
-                                detector.set_type('MATURE')
-                                DB.update_detector(detector)
-
-                            DB.add_confirmation_instance(instance)
-
-                        DB.remove_suspicious_instance(instance)
-                    else:
-                        print("No DNN available")
-                        exit(-1)
+                    classify_instance(instance)
 
 
 def retrain_dnn_callback():
@@ -261,9 +251,9 @@ def retrain_dnn_callback():
                 sum += 1
                 if sum >= DNN_TRAINING_THRESHOLD:
                     temp = train_dnn()
-                    LOCK.acquire()
+                    DNN_LOCK.acquire()
                     DNN = temp
-                    LOCK.release()
+                    DNN_LOCK.release()
 
                 resume_token = stream.resume_token
     except pymongo.errors.PyMongoError as error:
@@ -276,6 +266,6 @@ def retrain_dnn_callback():
                     sum += 1
                     if sum >= DNN_TRAINING_THRESHOLD:
                         temp = train_dnn()
-                        LOCK.acquire()
+                        DNN_LOCK.acquire()
                         DNN = temp
-                        LOCK.release()
+                        DNN_LOCK.release()
