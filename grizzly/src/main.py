@@ -16,35 +16,36 @@ if __name__ == "__main__":
 
     while True:
         if option == '0':
-            filename = input('Enter the Deep Neural Network filename to load from\n')
+            filename = input('\nEnter the Deep Neural Network filename to load from\n')
             # dnn.load_dnn(filename)
             break
         elif option == '1':
-            file_prompt = input('Would you like to use a dataset from a csv file?: y/n\n')
+            file_prompt = input('\nWould you like to use a dataset from a csv file?: y/n\n')
             while True:
                 if file_prompt == 'y':
-                    filename = input('Enter the csv filename\n')
+                    filename = input('\nEnter the csv filename\n')
                     dnn.DNN = dnn.train_dnn(filename)
                     break
                 elif file_prompt == 'n':
                     dnn.DNN = dnn.train_dnn()
                     break
                 else:
-                    print('Invalid input')
+                    print('\nInvalid input')
                     file_prompt = input('Would you like to use a dataset from a csv file?: y/n\n')
             break
         else:
-            print('Invalid input')
+            print('\nInvalid input')
             option = input(
                 '0: Load Deep Neural Network\n'
                 '1: Train New Deep Neural Network\n'
             )
+
     # Start the callback to watch the dataset table
     # When a threshold is reached, a new DNN is trained
     # It replaces the current DNN
 
     option = input(
-        '0: Continue\n'
+        '\n0: Continue\n'
         '1: Exit\n'
     )
 
@@ -52,20 +53,20 @@ if __name__ == "__main__":
         if option == '0':
             break
         elif option == '1':
-            save_prompt = input('Save Deep Neural Network: y/n\n')
+            save_prompt = input('\nSave Deep Neural Network: y/n\n')
 
             while True:
                 if save_prompt == 'y':
-                    filename = input('Enter the Deep Neural Network filename to save to\n')
+                    filename = input('\nEnter the Deep Neural Network filename to save to\n')
                     dnn.save_dnn(filename)
                     sys.exit(0)
                 elif save_prompt == 'n':
                     sys.exit(0)
                 else:
-                    print('Invalid input')
+                    print('\nInvalid input')
                     save_prompt = input('Save Deep Neural Network: y/n\n')
         else:
-            print('Invalid input')
+            print('\nInvalid input')
             option = input(
                 '0: Continue\n'
                 '1: Exit\n'
@@ -80,19 +81,19 @@ if __name__ == "__main__":
     wait(FUTURES, return_when='ALL_COMPLETED')
 
     option = input(
-        '0: Save Deep Neural Network\n'
+        '\n0: Save Deep Neural Network\n'
         '1: Exit\n'
     )
 
     while True:
         if option == '0':
-            filename = input('Enter the Deep Neural Network filename to save to\n')
+            filename = input('\nEnter the Deep Neural Network filename to save to\n')
             dnn.save_dnn(filename)
             break
         elif option == 1:
             sys.exit(0)
         else:
-            print('Invalid input')
+            print('\nInvalid input')
             option = input(
                 '0: Save Deep Neural Network\n'
                 '1: Exit\n'
