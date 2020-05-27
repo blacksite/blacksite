@@ -3,6 +3,8 @@
 
 from pymongo import MongoClient
 import numpy as np
+from instance import Instance
+from detector import Detector
 
 class MongoDBConnect:
 
@@ -16,47 +18,62 @@ class MongoDBConnect:
         return np.array(list(self.db['dataset'].find()))
 
     def get_all_detectors(self):
-        temp = list(self.db['detectors'].find())
+        collection = self.db['detectors']
+        temp = list(collection.find())
         detectors = {}
         for d in temp:
-            temp = {'_id': d['_id'], "VALUE": d['VALUE'], "TYPE": d['TYPE'], 'LIFE': d['LIFE']}
-            detectors[d["_id"]] = temp
+            detector = Detector(d['_id'], d['VALUE'], d['TYPE'], d['LIFE'])
+            detectors[detector.get_id()] = detector
 
         return detectors
 
     def get_all_suspicious_instances(self):
         temp = list(self.db['suspicious_instances'].find())
-        detectors = {}
+        instances = {}
         for i in temp:
-            temp = {'_id': i['_id'], "VALUE": i['VALUE'], "DETECTOR_id": i['DETECTOR_id']}
-            detectors[i["_id"]] = temp
+            instance = Instance(i['_id'], i['VALUE'], i['TYPE'], i['DETECTOR_id'])
+            for key, value in i:
+                if key != '_id' and key != 'VALUE' and key != 'TYPE' and key != 'DETECTOR_id':
+                    instance.add_feature(key, value)
+            instances[instance.get_id()] = instance
 
-        return detectors
+        return instances
 
     def remove_detector(self, detector):
         col = self.db['detectors']
-        myquery = {"_id": detector["_id"]}
+        myquery = {"_id": detector.get_id()}
         col.delete_one(myquery)
 
     def get_one(self, _id, col):
         sample = np.array(list(col.find({"_id" : _id})))
         return sample
 
-    def update_detector(self, detector):
-        col = self.db['detectors']
-        myquery = {"_id": detector["_id"]}
-        newvalues = {"$set": {"TYPE": detector["TYPE"]}}
-        col.update_one(myquery, newvalues)
+    def get_single_detector(self, _id):
+        collection = self.db['detectors']
+        myquery = {"_id": _id}
+        temp = collection.find(myquery)
+        detector = Detector(temp['_id'], temp['VALUE'], temp['TYPE'], temp['LIFE'])
+
+        return detector
+
+    def update_detector_type(self, detector):
+        collection = self.db['detectors']
+        myquery = {"_id": detector.get_id()}
+        newvalues = {"TYPE": detector.get_type()}
+        collection.update_one(myquery, newvalues)
 
         # print("Database update successful")
 
     def remove_suspicious_instance(self, instance):
         col = self.db['suspicious_instances']
-        myquery = {"_id": instance["_id"]}
+        myquery = {"_id": instance.get_id()}
         col.delete_one(myquery)
 
     def add_confirmation_instance(self, instance):
         col = self.db['confirmation_instances']
+        newvalues = {"VALUE": instance.get_value(), "TYPE": instance.get_type(),
+                     "DETECTOR_id": instance.get_detector_id()}
+        newvalues.update(instance.get_features())
         col.insert_one(instance)
 
     def get_dataset_collection(self):

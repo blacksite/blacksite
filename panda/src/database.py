@@ -30,6 +30,9 @@ class MongoDBConnect:
         instances = {}
         for i in temp:
             instance = Instance(i['_id'], i['VALUE'], i['TYPE'], i['DETECTOR_id'])
+            for key, value in i:
+                if key != '_id' and key != 'VALUE' and key != 'TYPE' and key != 'DETECTOR_id':
+                    instance.add_feature(key, value)
             instances[instance.get_id()] = instance
 
         return instances
@@ -66,7 +69,9 @@ class MongoDBConnect:
 
     def add_suspicious_instance(self, instance):
         collection = self.db['suspicious_instances']
-        newvalues = {"VALUE": instance.get_value(), "TYPE": instance.get_type(), "DETECTOR_id": instance.get_detector_id()}
+        newvalues = {"VALUE": instance.get_value(), "TYPE": instance.get_type(),
+                     "DETECTOR_id": instance.get_detector_id()}
+        newvalues.update(instance.get_features())
         d = collection.insert_one(newvalues)
         return d
 

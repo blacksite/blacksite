@@ -8,6 +8,8 @@ from database import MongoDBConnect
 import threading
 import pymongo
 import logging
+from instance import Instance
+from detector import Detector
 
 DB = MongoDBConnect()
 DNN = None
@@ -29,8 +31,8 @@ def train_dnn(filename=None):
         dataset = DB.get_all_dataset()
 
     # split into input (X) and output (y) variables
-    X = dataset[:, 0:80]
-    y = dataset[:, 80]
+    X = dataset[:, 0:1]
+    y = dataset[:, 1]
 
     # define the keras model
     temp_dnn = Sequential()
@@ -77,17 +79,16 @@ def train_initial_detectors():
     detectors = DB.get_all_detectors()
 
     for key, detector in detectors.items():
-        if detector['TYPE'] == 'INITIAL':
+        if detector.get_type() == 'INITIAL':
             if DNN:
                 LOCK.acquire()
-                # classification = DNN.classify( detector['Value'])
-                classification = None
+                classification = DNN.predict(detector.get_value())
                 LOCK.release()
 
                 if classification < 0.5:
                     DB.remove_detector(detector)
                 else:
-                    detector['TYPE'] = 'IMMATURE'
+                    detector.set_type('IMMATURE')
                     DB.update_detector(detector)
             else:
                 print("No DNN available")
@@ -103,19 +104,19 @@ def retrain_detectors_callback():
         resume_token = None
         pipeline = [{'$match': {'operationType': 'insert'}}]
         with DB.get_detectors_collection().watch(pipeline) as stream:
-            for detector in stream:
-                if detector['TYPE'] == 'INITIAL':
+            for value in stream:
+                detector = Detector(value['_id'], value['VALUE'], value['TYPE'], value['LIFE'])
+                if detector.get_type() == 'INITIAL':
                     if DNN:
                         LOCK.acquire()
-                        # classification = DNN.classify( detector['Value'])
-                        classification = None
+                        classification = DNN.predict(detector.get_value())
                         LOCK.release()
 
                         if classification < 0.5:
                             DB.remove_detector(detector)
                         else:
-                            detector['TYPE'] = 'IMMATURE'
-                            DB.update_detector(detector)
+                            detector.set_type('IMMATURE')
+                            DB.update_detector_type(detector)
                     else:
                         print("No DNN available")
                         exit(-1)
@@ -127,19 +128,19 @@ def retrain_detectors_callback():
         else:
             with DB.get_detectors_collection().watch(
                     pipeline, resume_after=resume_token) as stream:
-                for detector in stream:
-                    if detector['TYPE'] == 'INITIAL':
+                for value in stream:
+                    detector = Detector(value['_id'], value['VALUE'], value['TYPE'], value['LIFE'])
+                    if detector.get_type() == 'INITIAL':
                         if DNN:
                             LOCK.acquire()
-                            # classification = DNN.classify( detector['Value'])
-                            classification = None
+                            classification = DNN.predict(detector.get_value())
                             LOCK.release()
 
                             if classification < 0.5:
                                 DB.remove_detector(detector)
                             else:
-                                detector['TYPE'] = 'IMMATURE'
-                                DB.update_detector(detector)
+                                detector.set_type('IMMATURE')
+                                DB.update_detector_type(detector)
                         else:
                             print("No DNN available")
                             exit(-1)
@@ -151,20 +152,19 @@ def evaluate_initial_suspicious_instances():
     suspicious_instances = DB.get_all_suspicious_instances()
 
     for key, suspicious_instance in suspicious_instances.items():
-        if suspicious_instance['TYPE'] == 'INITIAL':
+        if suspicious_instance.get_type() == 'INITIAL':
             if DNN:
-                detector = DB.get_one(suspicious_instance['DETECTOR_id'], DB.get_detectors_collection())
+                detector = DB.get_single_detector(suspicious_instance.get_detector_id())
 
                 if DNN:
                     LOCK.acquire()
-                    # classification = DNN.classify( suspicious_instance)
-                    classification = None
+                    classification = DNN.predict(suspicious_instance.get_value())
                     LOCK.release()
 
                     if classification > 0.5:
-                        if detector['TYPE'] == 'IMMATURE':
-                            detector['TYPE'] == 'MATURE'
-                            DB.update_detector(detector)
+                        if detector.get_type() == 'IMMATURE':
+                            detector.set_type('MATURE')
+                            DB.update_detector_type(detector)
 
                         DB.add_confirmation_instance(suspicious_instance)
 
@@ -188,18 +188,22 @@ def evaluate_suspicious_instances_callback():
         pipeline = [{'$match': {'operationType': 'insert'}}]
         with DB.get_suspicious_instance_collection().watch(pipeline) as stream:
             for insert_change in stream:
-                instance = insert_change['fullDocument']
-                detector = DB.get_one(instance['DETECTOR_id'], DB.get_detectors_collection())
+                full_doc = insert_change['fullDocument']
+                instance = Instance(full_doc['_id'], full_doc['VALUE'], full_doc['TYPE'], full_doc['DETECTOR_id'])
+                for key, value in full_doc:
+                    if key != '_id' and key != 'VALUE' and key != 'TYPE' and key != 'DETECTOR_id':
+                        instance.add_feature(key, value)
+
+                detector = DB.get_single_detector(instance.get_detector_id())
 
                 if DNN:
                     LOCK.acquire()
-                    # classification = DNN.classify( suspicious_instance)
-                    classification = None
+                    classification = DNN.predict(instance.get_value())
                     LOCK.release()
 
                     if classification > 0.5:
-                        if detector['TYPE'] == 'IMMATURE':
-                            detector['TYPE'] == 'MATURE'
+                        if detector.get_type() == 'IMMATURE':
+                            detector.set_type('MATURE')
                             DB.update_detector(detector)
 
                         DB.add_confirmation_instance(instance)
@@ -217,18 +221,22 @@ def evaluate_suspicious_instances_callback():
             with DB.get_suspicious_instance_collection().watch(
                     pipeline, resume_after=resume_token) as stream:
                 for insert_change in stream:
-                    instance = insert_change['fullDocument']
-                    detector = DB.get_one(instance['DETECTOR_id'], DB.get_detectors_collection())
+                    full_doc = insert_change['fullDocument']
+                    instance = Instance(full_doc['_id'], full_doc['VALUE'], full_doc['TYPE'], full_doc['DETECTOR_id'])
+                    for key, value in full_doc:
+                        if key != '_id' and key != 'VALUE' and key != 'TYPE' and key != 'DETECTOR_id':
+                            instance.add_feature(key, value)
+
+                    detector = DB.get_single_detector(instance.get_detector_id())
 
                     if DNN:
                         LOCK.acquire()
-                        # classification = DNN.classify( suspicious_instance)
-                        classification = None
+                        classification = DNN.predict(instance.get_value())
                         LOCK.release()
 
                         if classification > 0.5:
-                            if detector['TYPE'] == 'IMMATURE':
-                                detector['TYPE'] == 'MATURE'
+                            if detector.get_type() == 'IMMATURE':
+                                detector.set_type('MATURE')
                                 DB.update_detector(detector)
 
                             DB.add_confirmation_instance(instance)

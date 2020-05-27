@@ -192,7 +192,7 @@ def classify_new_instances():
     try:
         resume_token = None
         pipeline = [{'$match': {'operationType': 'insert'}}]
-        with DB.get_detectors_collection().watch(pipeline=pipeline) as stream:
+        with DB.get_new_instances_collection().watch(pipeline=pipeline) as stream:
             for insert_change in stream:
                 temp = insert_change['fullDocument']
                 inserted_instance = Instance(_id=temp['_id'], value=temp['VALUE'], type=temp['TYPE'])
@@ -202,7 +202,7 @@ def classify_new_instances():
         if resume_token is None:
             logging.error('...' + str(error))
         else:
-            with DB.get_detectors_collection().watch(pipeline, resume_after=resume_token) as stream:
+            with DB.get_new_instances_collection().watch(pipeline, resume_after=resume_token) as stream:
                 for insert_change in stream:
                     temp = insert_change['fullDocument']
                     inserted_instance = Instance(_id=temp['_id'], value=temp['VALUE'], type=temp['TYPE'])
