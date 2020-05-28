@@ -12,6 +12,7 @@ class MongoDBConnect:
     def __init__(self):
         # connect to MongoDB
         self.client = MongoClient("mongodb+srv://root:root@cluster0-mns8t.mongodb.net/test")
+        # self.client = MongoClient("mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false")
         self.db = self.client["blacksite"]
 
     def get_all_detectors(self):
@@ -41,19 +42,23 @@ class MongoDBConnect:
         sample = np.array(list(collection.find({"_id" : _id})))
         return sample
 
+    def update_detector(self, detector):
+        collection = self.db['detectors']
+        myquery = {"_id": detector.get_id()}
+        newvalues = {"$set" : detector.get_database_values()}
+        collection.update_one(myquery, newvalues)
+
     def update_detector_type(self, detector):
         collection = self.db['detectors']
         myquery = {"_id": detector.get_id()}
-        newvalues = {"TYPE": detector.get_type()}
+        newvalues = {"$set" : {'TYPE': detector.get_type()}}
         collection.update_one(myquery, newvalues)
-
-        # print("Database update successful")
 
     def add_detector(self, detector):
         collection = self.db['detectors']
         newvalues = detector.get_database_values()
-        d = collection.insert_one(newvalues)
-        return d
+        _id = collection.insert_one(newvalues).inserted_id
+        return _id
 
     def delete_detector(self, detector):
         collection = self.db['detectors']

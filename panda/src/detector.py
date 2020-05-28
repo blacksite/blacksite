@@ -1,3 +1,5 @@
+import bson
+
 
 class Detector:
 
@@ -46,6 +48,9 @@ class Detector:
             return 0
 
     def get_database_values(self):
-        values = {"VALUE": self.get_value(), "TYPE": self.get_type(), "LIFE" : self.get_life()}
+        values = {"VALUE": self.get_value(), "TYPE": bson.Binary(self.get_type()), "LIFE" : self.get_life()}
+
+        if self.get_id():
+            values['_id'] = self.get_id()
 
         return values
