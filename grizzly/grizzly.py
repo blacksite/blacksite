@@ -4,12 +4,12 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.models import model_from_json
 import numpy as np
-from database import MongoDBConnect
+from common.database import MongoDBConnect
 import threading
 import pymongo
 import logging
-from instance import Instance
-from detector import Detector
+from common.instance import Instance
+from common.detector import Detector
 
 DB = MongoDBConnect()
 DNN = None
@@ -198,7 +198,6 @@ def evaluate_initial_suspicious_instances():
 
     for key, suspicious_instance in suspicious_instances.items():
         classify_instance(suspicious_instance)
-
 
 
 def evaluate_suspicious_instances_callback():

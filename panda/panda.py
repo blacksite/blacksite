@@ -1,6 +1,6 @@
-from database import MongoDBConnect
-from detector import Detector
-from instance import Instance
+from common.database import MongoDBConnect
+from common.detector import Detector
+from common.instance import Instance
 import random
 import time
 import threading
@@ -15,12 +15,12 @@ INITIAL_DETECTOR_LIFESPAN = 60
 IMMATURE_DETECTOR_LIFESPAN = 604800
 MATURE_DETECTOR_LIFESPAN = 2592000
 MEMORY_DETECTOR_LIFESPAN = 31536000
-CURRENT_DETECTORS = {}
 EXECUTOR = ThreadPoolExecutor(6)
 FUTURES = []
 LOCK = threading.Lock()
 
 DB = MongoDBConnect()
+CURRENT_DETECTORS = {}
 
 
 def generate_detector(_id=None):
@@ -188,6 +188,7 @@ def regenerate_detector():
 
 
 def classify_instance(instance):
+    # Classify a single instance using Current Detectors
     for dk, d in CURRENT_DETECTORS.items():
         if d.match(R_VALUE, instance.get_value()):
             LOCK.acquire()
@@ -231,73 +232,3 @@ def classify_new_instances():
                     temp = insert_change['fullDocument']
                     inserted_instance = Instance(_id=temp['_id'], value=temp['VALUE'], type=temp['TYPE'])
                     FUTURES.append(EXECUTOR.submit(classify_instance, inserted_instance))
-
-
-if __name__ == "__main__":
-    CURRENT_DETECTORS = DB.get_all_detectors()
-
-    if len(CURRENT_DETECTORS) < MAX_DETECTORS:
-        generate_initial_detectors()
-        print('Generating initial detectors')
-
-    FUTURES.append(EXECUTOR.submit(evaluate_detector_lifespans))
-    print('Evaluating detector lifespans')
-
-    FUTURES.append(EXECUTOR.submit(update_persistent_detectors))
-    print('Responding to detector updates')
-
-    FUTURES.append(EXECUTOR.submit(regenerate_detector))
-    print('Regenerating deleted detectors')
-
-    # FUTURES.append(EXECUTOR.submit(classify_initial_new_instances))
-    print('Classifying currently active new instances')
-
-    #  FUTURES.append(EXECUTOR.submit(classify_new_instances))
-    print('Classifying new instances')
-
-    # Test cases
-    for i in range(100):
-
-        key = random.choice(list(CURRENT_DETECTORS.keys()))
-        detector = CURRENT_DETECTORS[key]
-        test_detector = Detector(detector.get_id(), detector.get_value(), bin(3).encode(), detector.get_life())
-        LOCK.acquire()
-        DB.update_detector_type(test_detector)
-        CURRENT_DETECTORS[key] = test_detector
-        LOCK.release()
-
-        key = random.choice(list(CURRENT_DETECTORS.keys()))
-        detector = CURRENT_DETECTORS[key]
-        test_detector = Detector(detector.get_id(), detector.get_value(), bin(1).encode(), detector.get_life())
-        LOCK.acquire()
-        DB.update_detector_type(test_detector)
-        CURRENT_DETECTORS[key] = test_detector
-        LOCK.release()
-
-        key = random.choice(list(CURRENT_DETECTORS.keys()))
-        detector = CURRENT_DETECTORS[key]
-        test_detector = Detector(detector.get_id(), detector.get_value(), bin(2).encode(), detector.get_life())
-        LOCK.acquire()
-        DB.update_detector_type(test_detector)
-        CURRENT_DETECTORS[key] = test_detector
-        LOCK.release()
-
-        key = random.choice(list(CURRENT_DETECTORS.keys()))
-        detector = CURRENT_DETECTORS[key]
-        test_detector = Detector(detector.get_id(), detector.get_value(), bin(1).encode(), detector.get_life())
-        LOCK.acquire()
-        DB.update_detector_type(test_detector)
-        CURRENT_DETECTORS[key] = test_detector
-        LOCK.release()
-
-        key = random.choice(list(CURRENT_DETECTORS.keys()))
-        detector = CURRENT_DETECTORS[key]
-        test_detector = Detector(detector.get_id(), detector.get_value(), bin(2).encode(), detector.get_life())
-        LOCK.acquire()
-        DB.update_detector_type(test_detector)
-        CURRENT_DETECTORS[key] = test_detector
-        LOCK.release()
-
-    for f in FUTURES:
-        print(f.result())
-
