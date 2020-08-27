@@ -1,9 +1,7 @@
 import threading
 from concurrent.futures import ThreadPoolExecutor, wait
 from common.database import MongoDBConnect
-import grizzly.grizzly
-import panda.panda
-import polar.polar
+from components import grizzly, panda, polar
 import csv
 import sys
 
