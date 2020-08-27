@@ -1,9 +1,7 @@
-import theano
 from numpy import loadtxt
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.models import model_from_json
-import numpy as np
 from common.database import MongoDBConnect
 import threading
 import pymongo
