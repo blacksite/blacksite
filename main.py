@@ -1,9 +1,7 @@
 import threading
 from concurrent.futures import ThreadPoolExecutor, wait
 from common.database import MongoDBConnect
-import grizzly.grizzly
-import panda.panda
-import polar.polar
+from components import grizzly, panda, polar
 import csv
 import sys
 
@@ -12,8 +10,14 @@ FUTURES = []
 LOCK = threading.Lock()
 DB = MongoDBConnect()
 
-if __name__ == "__main__":
-    option = input('Read from csv file: y/n\n')
+
+def start_polar():
+    ############################################
+    ############################################
+    ############################################
+    ############################################
+    # POLAR
+    option = input('Read new instances from csv file: y/n\n')
 
     while True:
         if option == 'y':
@@ -21,7 +25,7 @@ if __name__ == "__main__":
             with open(filename, 'r') as file:
                 reader = csv.reader(file)
                 for row in reader:
-                    FUTURES.append(EXECUTOR.submit(polar.add_new_instance, row))
+                    polar.add_new_instance(row)
             break
         elif option == 'n':
             # begin CICFlowmeter-V4.0
@@ -30,6 +34,14 @@ if __name__ == "__main__":
         else:
             print('Invalid input')
             option = input('Read from csv file: y/n\n')
+
+
+def start_panda():
+    ############################################
+    ############################################
+    ############################################
+    ############################################
+    # PANDA
 
     panda.CURRENT_DETECTORS = DB.get_all_detectors()
 
@@ -52,6 +64,14 @@ if __name__ == "__main__":
     #  FUTURES.append(EXECUTOR.submit(panda.classify_new_instances))
     print('Classifying new instances')
 
+
+def start_grizzly():
+    ############################################
+    ############################################
+    ############################################
+    ############################################
+    # GRIZZLY
+
     option = input(
         '0: Load Deep Neural Network\n'
         '1: Train New Deep Neural Network\n'
@@ -60,13 +80,16 @@ if __name__ == "__main__":
     while True:
         if option == '0':
             filename = input('\nEnter the Deep Neural Network filename to load from\n')
-            # dnn.load_dnn(filename)
+            grizzly.load_dnn(filename)
             break
         elif option == '1':
-            file_prompt = input('\nWould you like to use a dataset from a csv file?: y/n\n')
+            file_prompt = input('Would you like to use a dataset from a csv file?: y/n\n')
             while True:
                 if file_prompt == 'y':
-                    filename = input('\nEnter the csv filename\n')
+                    # filename = input('\nEnter the csv filename\n'
+                    #                 '**If there are multiple files, separate with a comma (no spaces)**\n')
+                    filename = 'data/Day1.csv,data/Day2.csv,data/Day3.csv,data/Day4.csv'
+                    # filename = 'data/Sample.csv'
                     grizzly.train_dnn(filename)
                     break
                 elif file_prompt == 'n':
@@ -96,11 +119,11 @@ if __name__ == "__main__":
         if option == '0':
             break
         elif option == '1':
-            save_prompt = input('\nSave Deep Neural Network: y/n\n')
+            save_prompt = input('Save Deep Neural Network: y/n\n')
 
             while True:
                 if save_prompt == 'y':
-                    filename = input('\nEnter the Deep Neural Network filename to save to\n')
+                    filename = input('Enter the Deep Neural Network filename to save to\n')
                     grizzly.save_dnn(filename)
                     sys.exit(0)
                 elif save_prompt == 'n':
@@ -115,29 +138,29 @@ if __name__ == "__main__":
                 '1: Exit\n'
             )
 
-    FUTURES.append(EXECUTOR.submit(grizzly.retrain_dnn_callback))
+    # FUTURES.append(EXECUTOR.submit(grizzly.retrain_dnn_callback))
     FUTURES.append(EXECUTOR.submit(grizzly.train_initial_detectors))
-    FUTURES.append(EXECUTOR.submit(grizzly.retrain_detectors_callback))
-    FUTURES.append(EXECUTOR.submit(grizzly.evaluate_initial_suspicious_instances))
-    FUTURES.append(EXECUTOR.submit(grizzly.evaluate_suspicious_instances_callback))
+    # FUTURES.append(EXECUTOR.submit(grizzly.retrain_detectors_callback))
+    # FUTURES.append(EXECUTOR.submit(grizzly.evaluate_initial_suspicious_instances))
+    # FUTURES.append(EXECUTOR.submit(grizzly.evaluate_suspicious_instances_callback))
+
+
+if __name__ == "__main__":
+    # start_polar()
+    # start_panda()
+    start_grizzly()
+
+    option = input(
+        '\nSave Deep Neural Network: y/n\n'
+    )
+    if option == 'y':
+        filename = input('\nEnter the Deep Neural Network filename to save to\n')
+        grizzly.save_dnn(filename)
 
     wait(FUTURES, return_when='ALL_COMPLETED')
 
-    option = input(
-        '\n0: Save Deep Neural Network\n'
-        '1: Exit\n'
-    )
 
-    while True:
-        if option == '0':
-            filename = input('\nEnter the Deep Neural Network filename to save to\n')
-            grizzly.save_dnn(filename)
-            break
-        elif option == 1:
-            sys.exit(0)
-        else:
-            print('\nInvalid input')
-            option = input(
-                '0: Save Deep Neural Network\n'
-                '1: Exit\n'
-            )
+
+
+
+
