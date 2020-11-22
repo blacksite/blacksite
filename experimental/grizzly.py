@@ -1,11 +1,10 @@
-import pandas
 from keras.models import Sequential
 from keras.layers import Dense
 import keras.metrics as km
-import threading
 import numpy as np
 from tensorflow import keras
 from os import path
+import threading
 
 
 # Disable GPU otimization
@@ -40,6 +39,24 @@ def set_common(detectors, validated_instances, suspicious_instances, dataset):
     CURRENT_DATASET_SIZE = DATASET.size()
 
 
+def define_model_multiclass():
+    global DATASET
+
+    # create and fit the DNN network
+    model = Sequential()
+    model.add(Dense(70, input_dim=DATASET.get_number_of_features(), activation='relu'))
+    model.add(Dense(60, activation='relu'))
+    model.add(Dense(50, activation='relu'))
+    model.add(Dense(40, activation='relu'))
+    model.add(Dense(30, activation='relu'))
+    model.add(Dense(20, activation='relu'))
+    model.add(Dense(10, activation='relu'))
+    model.add(Dense(DATASET.NUM_CLASSES, activation='softmax'))
+    model.compile(loss='categorical_crossentropy', optimizer='adam',
+                  metrics=["accuracy"])
+    return model
+
+
 def define_model():
     # create and fit the DNN network
     model = Sequential()
@@ -67,13 +84,10 @@ def experimental_train_dnn(w, index=None, fit=True):
     global DNN
     global DATASET
 
-    print('Training DNN')
 
-    print("Partitioning dataset")
     partitions_X, partitions_Y = DATASET.get_partitions()
-    print("Partitioning complete")
 
-    print("Starting training")
+    print("Starting dnn training for partition " +str(index))
 
     # for batch training
     # batches = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
@@ -131,62 +145,68 @@ def experimental_train_dnn(w, index=None, fit=True):
         training_y.extend(partitions_Y[index])
 
     # begin training the model
-    model = define_model()
+    model = define_model_multiclass()
     if fit:
         model.fit(np.array(training_x), np.array(training_y), BATCH_SIZE, epochs=100, verbose=2)
-        results = model.evaluate(np.array(test_x), np.array(test_y))
+        prediction = model.predict(np.array(test_x), batch_size=BATCH_SIZE)
+        results = calculate_results(prediction, test_y)
     else:
         results = DNN.evaluate(np.array(test_x), np.array(test_y))
-    w.write('{:^10.2f}'.format(results[0]))
-    w.write(',{:^10.2f}'.format(results[1] * 100.0))
-    for x in range(2, len(results)):
-        w.write(',{:^10.0f}'.format(results[x]))
+    w.write('{:^30.2f}'.format(results[0] * 100.0))
+    for x in range(1, len(results)):
+        w.write(',{:^30.0f}'.format(results[x]))
     w.write('\n')
     w.flush()
 
     DNN = model
 
+    print("Finished dnn training " + str(index))
 
-def train_dnn():
-    global NUM_BENIGN_INSTANCES
-    global NUM_MALICIOUS_INSTANCES
-    global RAW_PARTITION_SIZES
 
-    best_accuracy = -1
-    best_dnn = None
+def calculate_results(p, y):
+    global DATASET
+    tp = 0
+    fp = 0
+    tn = 0
+    fn = 0
 
-    partitions_X, partitions_Y = DATASET.partition_dataset()
-    print("Starting training")
+    temp = {}
 
-    for i in range(DATASET.KFOLDS):
-        # create training and testing x and y datasets from the kFolds
-        training_x, training_y = [], []
-        test_x, test_y = partitions_X[i], partitions_Y[i]
+    for i in range(len(DATASET.CLASSES)):
+        temp[DATASET.CLASSES[i]] = [0, 0]
 
-        for x in range(DATASET.KFOLDS):
-            if x == i:
-                continue
+    for i in range(len(p)):
+        prediction = list(p[i]).index(max(list(p[i])))
+        actual = list(y[i]).index(max(list(y[i])))
 
-            training_x.extend(partitions_X[i])
-            training_y.extend(partitions_Y[i])
+        if actual == 0:
+            if prediction == actual:
+                temp[DATASET.CLASSES[actual]][0] += 1
+                tn += 1
+            else:
+                temp[DATASET.CLASSES[actual]][1] += 1
+                fp += 1
+        else:
+            if prediction == actual or prediction != 0:
+                temp[DATASET.CLASSES[actual]][0] += 1
+                tp += 1
+            else:
+                temp[DATASET.CLASSES[actual]][1] += 1
+                fn += 1
 
-        # begin training the model
-        model = define_model()
-        model.fit(np.array(training_x), np.array(training_y), BATCH_SIZE, epochs=100, verbose=2)
-        results = model.evaluate(np.array(test_x), np.array(test_y))
+    accuracy = (tp + tn) / (tp + tn + fp + fn)
 
-        # Determine if current model has better accuracy than previous
-        # If so, set DNN equal to current model
-        if results[1] > best_accuracy:
-            best_accuracy = results[1]
-            best_dnn = model
+    results = [accuracy]
 
-    return best_dnn
+    for i in range(len(DATASET.CLASSES)):
+        results.extend(temp[DATASET.CLASSES[i]])
+
+    return results
 
 
 def save_dnn(filename):
     global DNN
-    DNN.save("model/" + filename + ".dnn")
+    DNN.save("../model/" + filename + ".dnn")
 
 
 def load_dnn(filename):
@@ -213,49 +233,8 @@ def classify(value):
             classification = DNN.predict(np.array([value]))
             DNN_LOCK.release()
 
-            return classification
+            return list(classification[0]).index(max(list(classification[0])))
 
     else:
         print("No DNN available")
         exit(-1)
-
-
-def monitor_dataset():
-    global DNN
-    global DNN_LOCK
-    global DNN_TRAINING_THRESHOLD
-    global DATASET
-
-    if DATASET.size() > CURRENT_DATASET_SIZE + DNN_TRAINING_THRESHOLD:
-        temp = train_dnn()
-        DNN_LOCK.acquire()
-        DNN = temp
-        DNN_LOCK.release()
-
-
-def monitor_suspicious_instances():
-    global SUSPICIOUS_INSTANCES
-    global VALIDATED_INSTANCES
-
-    while True:
-        if len(SUSPICIOUS_INSTANCES.get_all_suspicious_instances()) > 0:
-            instance = SUSPICIOUS_INSTANCES.get_all_suspicious_instances().pop()
-            classification = classify(instance.get_value())
-
-            if classification > 0.5:
-                VALIDATED_INSTANCES.add_validated_instance(instance)
-
-
-def monitor_detectors():
-    global DETECTORS
-
-    while True:
-        initial_detectors = DETECTORS.get_initial_detectors()
-
-        if len(initial_detectors) > 0:
-            for key, det in initial_detectors.items():
-                if classify(det.get_value()) <= 0.5:
-                    DETECTORS.remove_detector(det)
-                else:
-                    det.set_immature()
-                    DETECTORS.update_detector(det)

@@ -1,0 +1,17 @@
+Number of Benign Instances: 2471308
+Number of Malicious Instances: 1722991
+Number of folds: 10Number of Benign Instances: 247130 per fold
+Number of FTP-BruteForce Instances: 19336 per fold
+Number of SSH-Bruteforce Instances: 18758 per fold
+Number of DoS attacks-GoldenEye Instances: 4150 per fold
+Number of DoS attacks-Slowloris Instances: 1099 per fold
+Number of DoS attacks-SlowHTTPTest Instances: 13989 per fold
+Number of DoS attacks-Hulk Instances: 46191 per fold
+Number of DDOS attack-LOIC-UDP Instances: 173 per fold
+Number of DDOS attack-HOIC Instances: 68601 per fold
+
+   BCE    , Accuracy ,    TP    ,    FP    ,    TN    ,    FN    
+   0.00   ,  99.92   ,  172277  ,   333    ,  246797  ,    20    
+   0.20   ,  93.79   ,  168085  ,  21855   ,  225275  ,   4212   
+   0.02   ,  99.63   ,  171119  ,   387    ,  246743  ,   1178   
+   0.45   ,  79.98   ,  88374   ,    65    ,  247065  ,  83923   

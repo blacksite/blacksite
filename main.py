@@ -1,14 +1,16 @@
 import threading
 from concurrent.futures import ThreadPoolExecutor, wait
-from common.database import MongoDBConnect
-from components import grizzly, panda, polar
+from components import grizzly, panda
+from components import polar
 import csv
 import sys
+from cache import dataset, detectors, new_instances, suspicious_instances, validated_instances
+from os import path
+import logging
 
 EXECUTOR = ThreadPoolExecutor(10)
 FUTURES = []
-LOCK = threading.Lock()
-DB = MongoDBConnect()
+SAVE_FILE = None
 
 
 def start_polar():
@@ -42,27 +44,16 @@ def start_panda():
     ############################################
     ############################################
     # PANDA
+    global SAVE_FILE
 
-    panda.CURRENT_DETECTORS = DB.get_all_detectors()
-
-    if len(panda.CURRENT_DETECTORS) < panda.MAX_DETECTORS:
-        panda.generate_initial_detectors()
-        print('Generating initial detectors')
+    panda.set_common(detectors, new_instances, suspicious_instances, dataset, SAVE_FILE)
+    panda.generate_initial_detectors()
 
     FUTURES.append(EXECUTOR.submit(panda.evaluate_detector_lifespans))
     print('Evaluating detector lifespans')
 
-    FUTURES.append(EXECUTOR.submit(panda.update_persistent_detectors))
-    print('Responding to detector updates')
-
-    FUTURES.append(EXECUTOR.submit(panda.regenerate_detector))
-    print('Regenerating deleted detectors')
-
-    # FUTURES.append(EXECUTOR.submit(panda.classify_initial_new_instances))
-    print('Classifying currently active new instances')
-
-    #  FUTURES.append(EXECUTOR.submit(panda.classify_new_instances))
-    print('Classifying new instances')
+    FUTURES.append(EXECUTOR.submit(panda.monitor_new_instances))
+    print('Monitoring new instances')
 
 
 def start_grizzly():
@@ -71,6 +62,9 @@ def start_grizzly():
     ############################################
     ############################################
     # GRIZZLY
+    global SAVE_FILE
+
+    grizzly.set_common(detectors, validated_instances, suspicious_instances, dataset)
 
     option = input(
         '0: Load Deep Neural Network\n'
@@ -83,21 +77,7 @@ def start_grizzly():
             grizzly.load_dnn(filename)
             break
         elif option == '1':
-            file_prompt = input('Would you like to use a dataset from a csv file?: y/n\n')
-            while True:
-                if file_prompt == 'y':
-                    # filename = input('\nEnter the csv filename\n'
-                    #                 '**If there are multiple files, separate with a comma (no spaces)**\n')
-                    filename = 'data/Day1.csv,data/Day2.csv,data/Day3.csv,data/Day4.csv'
-                    # filename = 'data/Sample.csv'
-                    grizzly.train_dnn(filename)
-                    break
-                elif file_prompt == 'n':
-                    grizzly.train_dnn()
-                    break
-                else:
-                    print('\nInvalid input')
-                    file_prompt = input('Would you like to use a dataset from a csv file?: y/n\n')
+            grizzly.train_dnn()
             break
         else:
             print('\nInvalid input')
@@ -106,49 +86,52 @@ def start_grizzly():
                 '1: Train New Deep Neural Network\n'
             )
 
+
     # Start the callback to watch the dataset table
     # When a threshold is reached, a new DNN is trained
     # It replaces the current DNN
 
-    option = input(
-        '\n0: Continue\n'
-        '1: Exit\n'
-    )
+    save_prompt = input('Save Deep Neural Network: y/n\n')
 
     while True:
-        if option == '0':
-            break
-        elif option == '1':
-            save_prompt = input('Save Deep Neural Network: y/n\n')
-
-            while True:
-                if save_prompt == 'y':
-                    filename = input('Enter the Deep Neural Network filename to save to\n')
-                    grizzly.save_dnn(filename)
-                    sys.exit(0)
-                elif save_prompt == 'n':
-                    sys.exit(0)
-                else:
-                    print('\nInvalid input')
-                    save_prompt = input('Save Deep Neural Network: y/n\n')
+        if save_prompt == 'y':
+            filename = input('Enter the Deep Neural Network filename to save to\n')
+            grizzly.save_dnn(filename)
+            sys.exit(0)
+        elif save_prompt == 'n':
+            sys.exit(0)
         else:
             print('\nInvalid input')
-            option = input(
-                '0: Continue\n'
-                '1: Exit\n'
-            )
+            save_prompt = input('Save Deep Neural Network: y/n\n')
 
-    # FUTURES.append(EXECUTOR.submit(grizzly.retrain_dnn_callback))
-    FUTURES.append(EXECUTOR.submit(grizzly.train_initial_detectors))
-    # FUTURES.append(EXECUTOR.submit(grizzly.retrain_detectors_callback))
-    # FUTURES.append(EXECUTOR.submit(grizzly.evaluate_initial_suspicious_instances))
-    # FUTURES.append(EXECUTOR.submit(grizzly.evaluate_suspicious_instances_callback))
+    # FUTURES.append(EXECUTOR.submit(grizzly.monitor_dataset))
+    # FUTURES.append(EXECUTOR.submit(grizzly.monitor_suspicious_instances))
+    # FUTURES.append(EXECUTOR.submit(grizzly.monitor_detectors))
+
+
+def start_dataset():
+    file_prompt = input('Would you like to use a dataset from a csv file?: y/n\n')
+    while True:
+        if file_prompt == 'y':
+            # filename = input('\nEnter the csv filename\n'
+            #                 '**If there are multiple files, separate with a comma (no spaces)**\n')
+            filename = 'data/Day1.csv,data/Day2.csv'
+            # filename = 'data/Sample.csv'
+            dataset.read_from_file(filename)
+            break
+        elif file_prompt == 'n':
+            # grizzly.train_dnn()
+            break
+        else:
+            print('\nInvalid input')
+            file_prompt = input('Would you like to use a dataset from a csv file?: y/n\n')
 
 
 if __name__ == "__main__":
     # start_polar()
+    # start_grizzly()
     # start_panda()
-    start_grizzly()
+
 
     option = input(
         '\nSave Deep Neural Network: y/n\n'
