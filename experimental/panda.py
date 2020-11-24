@@ -4,6 +4,7 @@ import threading
 import logging
 import copy
 import time
+from models.neural_network_nsa import NeuralNetworkNSA
 
 MAX_DETECTORS = 1000
 EXECUTOR = ThreadPoolExecutor(max_workers=500)
@@ -38,6 +39,18 @@ def set_common(detectors, new_instances, suspicious_instances, dataset):
     NEW_INSTANCES = new_instances
     SUSPICIOUS_INSTANCES = suspicious_instances
     DATASET = dataset
+
+
+def evaulate_model(grizzly, index):
+    global DATASET
+
+    model = NeuralNetworkNSA()
+    model.fit(DATASET.get_number_of_features(), grizzly, DATASET.MAX_FEATURES)
+
+    partitions_X, partitions_Y = DATASET.get_partitions()
+    test_x, test_y = partitions_X[index], partitions_Y[index]
+
+    model.predict(test_x, test_y, DATASET.CLASSES)
 
 
 def generate_detector(seed):
