@@ -2,32 +2,108 @@ import bson
 import random
 import time
 import uuid
+import numpy as np
 
 
 class Detector:
 
-    def __init__(self, num_features=None, _id=None, value=None, type=None, life=None, seed=None):
+    def __init__(self, num_features=None, _id=None, value=None, type=None, life=None, seed=None, std_dev=1):
         self._id = _id
         self.VALUE = value
         self.TYPE = type
         self.LIFE = life
         self.NUM_FEATURES = num_features
         self.SEED = seed
-        self.generate()
+        self.single_value = []
+        self.generate_median_mad(std_dev)
 
-    def generate(self):
+    def generate_random(self, std_dev=3):
         value = []
 
         for i in range(self.NUM_FEATURES):
-            num1 = random.uniform(0, self.SEED[i])
-            num2 = random.uniform(0, self.SEED[i])
+            max_val = self.SEED[i][1]
+            if max_val != 0.0:
+                num1 = random.uniform(0, 1)
+                num2 = random.uniform(0, 1)
 
-            if num1 < num2:
-                value.append((num1,num2))
+                if num1 > num2:
+                    temp = num1
+                    num1 = num2
+                    num2 = temp
+
+                value.append([num1, num2])
             else:
-                value.append((num2,num1))
+                value.append([0.0, 0.0])
 
         self.VALUE = value
+        self.LIFE = time.time()
+        self.set_initial()
+        self._id = uuid.uuid4()
+
+    def generate_median_mad(self, std_dev=3):
+        value = []
+
+        for i in range(self.NUM_FEATURES):
+            min_val = max(0, self.SEED[i][0] - (self.SEED[i][1] * std_dev))
+            max_val = min(1, self.SEED[i][0] + (self.SEED[i][1] * std_dev))
+            if max_val != 0.0:
+                num1 = random.uniform(min_val, self.SEED[i][0])
+                num2 = random.uniform(self.SEED[i][0], max_val)
+
+                value.append([num1, num2])
+            else:
+                value.append([0.0, 0.0])
+
+        self.VALUE = value
+        self.LIFE = time.time()
+        self.set_initial()
+        self._id = uuid.uuid4()
+
+    def generate_min_max(self, std_dev=3):
+        value = []
+
+        for i in range(self.NUM_FEATURES):
+            min_val = self.SEED[i][0]
+            max_val = self.SEED[i][1]
+            if max_val != 0.0:
+                num1 = random.uniform(min_val, max_val)
+                num2 = random.uniform(min_val, max_val)
+
+                if num1 > num2:
+                    temp = num1
+                    num1 = num2
+                    num2 = temp
+
+                value.append([num1, num2])
+            else:
+                value.append([0.0, 0.0])
+
+        self.VALUE = value
+        self.LIFE = time.time()
+        self.set_initial()
+        self._id = uuid.uuid4()
+
+    def generate_min_max_single(self, std_dev=3):
+        value = []
+        temp = []
+
+        for i in range(self.NUM_FEATURES):
+            min_val = self.SEED[i][0]
+            max_val = self.SEED[i][1]
+            if max_val != 0.0:
+                num1 = random.uniform(min_val, max_val)
+
+                value.append(num1)
+            else:
+                value.append(0.0)
+
+            min_val = max(0.0, num1 - (self.SEED[i][2] * std_dev))
+            max_val = min(1.0, num1 + (self.SEED[i][2] * std_dev))
+
+            temp.append([min_val, max_val])
+
+        self.VALUE = temp
+        self.single_value = value
         self.LIFE = time.time()
         self.set_initial()
         self._id = uuid.uuid4()
@@ -56,6 +132,9 @@ class Detector:
             mean_values.append(mean)
 
         return mean_values
+
+    def get_single_value(self):
+        return self.single_value
 
     def get_type(self):
         return self.TYPE
@@ -113,3 +192,8 @@ class Detector:
 
     def set_memory(self):
         self.TYPE = 'MEMORY'
+
+    def get_np_values(self):
+        temp = np.array(self.VALUE, dtype='f4')
+
+        return temp.ravel()

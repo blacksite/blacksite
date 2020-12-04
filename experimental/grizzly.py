@@ -84,65 +84,18 @@ def experimental_train_dnn(w, index=None, fit=True):
     global DNN
     global DATASET
 
-
     partitions_X, partitions_Y = DATASET.get_partitions()
 
     print("Starting dnn training for partition " +str(index))
-
-    # for batch training
-    # batches = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
-    # for b in batches:
-    #     estimator = KerasClassifier(build_fn=define_model, epochs=100, batch_size=b, verbose=2)
-    #     kfold = KFold(n_splits=10, shuffle=True)
-    #     results = cross_val_score(estimator, np.array(training_instances), np.array(training_labels), cv=kfold)
-    #     print("Baseline: %.2f%% (%.2f%%)" % (results.mean() * 100, results.std() * 100))
-    #
-    #     w.write("{:s}".format(str(b)))
-    #     for a in results:
-    #         w.write(',{:s}'.format(str(a)))
-    #     w.write('\n')
-    #     w.flush()
-
-    # for individual deep neural network
-    # for i in range(DATASET.KFOLDS):
-    #     # create training and testing x and y datasets from the kFolds
-    #     training_x, training_y = [], []
-    #     test_x, test_y = partitions_X[i], partitions_Y[i]
-    #
-    #     for x in range(DATASET.KFOLDS):
-    #         if x == i:
-    #             continue
-    #
-    #         training_x.extend(partitions_X[i])
-    #         training_y.extend(partitions_Y[i])
-    #
-    #     # begin training the model
-    #     model = define_model()
-    #     model.fit(np.array(training_x), np.array(training_y), BATCH_SIZE, epochs=100, verbose=2)
-    #     results = model.evaluate(np.array(test_x), np.array(test_y))
-    #     w.write('{:^10.2f}'.format(results[0]))
-    #     w.write(',{:^10.2f}'.format(results[1] * 100.0))
-    #     for x in range(2, len(results)):
-    #         w.write(',{:^10.0f}'.format(results[x]))
-    #     w.write('\n')
-    #     w.flush()
-    #
-    #     # Determine if current model has better accuracy than previous
-    #     # If so, set DNN equal to current model
-    #     if results[1] > BEST_ACCURACY:
-    #         BEST_ACCURACY = results[1]
-    #         DNN = model
 
     # create training and testing x and y datasets from the kFolds
     training_x, training_y = [], []
     test_x, test_y = partitions_X[index], partitions_Y[index]
 
     for x in range(DATASET.KFOLDS):
-        if x == index:
-            continue
-
-        training_x.extend(partitions_X[index])
-        training_y.extend(partitions_Y[index])
+        if x != index:
+            training_x.extend(partitions_X[x])
+            training_y.extend(partitions_Y[x])
 
     # begin training the model
     model = define_model_multiclass()

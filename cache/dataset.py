@@ -1,11 +1,13 @@
 from os import path
 import pandas
-from sklearn.preprocessing import normalize
+from sklearn.preprocessing import normalize, MinMaxScaler
 import numpy as np
 import threading
 from sklearn.preprocessing import LabelEncoder
 from keras.utils import np_utils
 import random
+import statistics
+from scipy import stats
 
 LOCK = threading.Lock()
 DATASET = []
@@ -20,6 +22,7 @@ NUM_FEATURES = 76
 NUM_CLASSES = 0
 MAX_FEATURES = {}
 CLASSES = []
+std_devs = {}
 
 
 def add_sample(sample):
@@ -44,7 +47,7 @@ def size():
 
 
 def read_from_file(w, filename):
-    print("Loading dataset started")
+    print("Loading data set started")
     global DATASET
     global LOCK
 
@@ -69,11 +72,11 @@ def read_from_file(w, filename):
             DATASET.extend(dataframe.values)
             LOCK.release()
 
-    print('Loading dataset finished')
-    partition_dataset_multiclass(w)
+    print('Loading data set finished')
+    partition_data_set(w)
 
 
-def partition_dataset(w):
+def partition_data_set(w):
     #   1. convert all string labels to int
     #   2. for each label, create a new dictionary key
     #   3. add all individual instances to dictionary
@@ -81,106 +84,7 @@ def partition_dataset(w):
     #   5. convert all malciious instances to labels of 1
     #   6. extend the folds dictionary with individual partitions
 
-    print('Datast partitioning started')
-    global NUM_MALICIOUS_INSTANCES
-    global NUM_BENIGN_INSTANCES
-    global RAW_PARTITION_SIZES
-    global DATASET
-    global KFOLDS
-    global MAX_FEATURES
-    global size_of_partitions
-
-    X, Y = [], []
-
-    for d in DATASET:
-        X.append(np.array(d[3:-1]))
-        Y.append(d[-1])
-        if "Flow Duration" in d[3:-1]:
-            print(str(d[3:-1]))
-
-    X = np.array(X)
-    Y = np.array(Y)
-
-    X_minmax = normalize(X, norm="max")
-
-    instances = {}
-
-    for i in range(len(Y)):
-        if Y[i] not in instances:
-            instances[Y[i]] = []
-        instances[Y[i]].append(X_minmax[i])
-
-    # Get the number of malicious and benign instances
-    # Set the number of benign instances to malicious * 2
-    num_mal = 0
-    for key, value in instances.items():
-        if key != 'Benign':
-            num_mal = num_mal + len(value)
-
-            MAX_FEATURES[key] = [max(idx) for idx in zip(*value)]
-
-
-    NUM_MALICIOUS_INSTANCES = num_mal
-    NUM_BENIGN_INSTANCES = num_mal
-    if NUM_BENIGN_INSTANCES > len(instances['Benign']):
-        NUM_BENIGN_INSTANCES = len(instances['Benign'])
-
-    # Limit the number of benign instances
-    # instances['Benign'] = instances['Benign'][:NUM_BENIGN_INSTANCES]
-
-    # Randomly select Benign instances to match the number of malicious instances
-    instances['Benign'] = random.sample(instances['Benign'], NUM_BENIGN_INSTANCES)
-
-    partition_sizes = {}
-
-    for key, value in instances.items():
-        partition_sizes[key] = int(len(value)/KFOLDS)
-
-    RAW_PARTITION_SIZES = partition_sizes
-
-    partitions_X = {}
-    partitions_Y = {}
-
-    for i in range(KFOLDS):
-        if i not in partitions_X:
-            partitions_X[i] = []
-            partitions_Y[i] = []
-        for key, ins in instances.items():
-            for x in range(partition_sizes[key]):
-                partitions_X[i].append(ins.pop(0))
-                if key == 'Benign':
-                    partitions_Y[i].append(0)
-                else:
-                    partitions_Y[i].append(1)
-
-    global PARTITION_X
-    global PARTITION_Y
-
-    PARTITION_X = partitions_X
-    PARTITION_Y = partitions_Y
-
-    size_of_partitions = len(partitions_X[0])
-
-    w.write("Number of Benign Instances: " + str(NUM_BENIGN_INSTANCES) + "\n")
-    w.write("Number of Malicious Instances: " + str(NUM_MALICIOUS_INSTANCES) + "\n")
-    w.write("Number of folds: {:s}\n".format(str(KFOLDS)))
-    for key, value in RAW_PARTITION_SIZES.items():
-        w.write("Number of {:s} Instances per fold {:s}\n".format(key, str(value)))
-    w.flush()
-    w.close()
-
-    print('Dataset partitioning finished')
-
-
-def partition_dataset_multiclass(w):
-    #   1. convert all string labels to int
-    #   2. for each label, create a new dictionary key
-    #   3. add all individual instances to dictionary
-    #   4. for each label, partition instances into folds
-    #   5. convert all malciious instances to labels of 1
-    #   6. extend the folds dictionary with individual partitions
-
-    print('Dataset partitioning started')
+    print('Data set partitioning started')
 
     global NUM_MALICIOUS_INSTANCES
     global NUM_BENIGN_INSTANCES
@@ -192,48 +96,46 @@ def partition_dataset_multiclass(w):
     global CLASSES
     global size_of_partitions
 
-    X, Y = [], []
+    x, y = [], []
 
     for d in DATASET:
-        X.append(np.array(d[3:-1]))
-        Y.append(d[-1])
+        x.append(np.array(d[3:-1]))
+        y.append(d[-1])
         if "Flow Duration" in d[3:-1]:
             print(str(d[3:-1]))
 
-    X = np.array(X)
-    Y = np.array(Y)
+    # Convert X and Y into numpy arrays
+    x = np.array(x)
+    y = np.array(y)
 
-    # Normalize the x vector
-    X_minmax = normalize(X, norm="max")
+    # Normalize X features
+    scalar = MinMaxScaler()
+    scalar.fit(x)
+    x_normalized = scalar.transform(x)
 
     # Transform y vector into a matrix
     encoder = LabelEncoder()
-    encoder.fit(Y)
+    encoder.fit(y)
     CLASSES = encoder.classes_
-    Y_encoded = encoder.transform(Y)
+    y_encoded = encoder.transform(y)
     # convert integers to dummy variables (i.e. one hot encoded)
-    dummy_y = np_utils.to_categorical(Y_encoded)
+    y_encoded = np_utils.to_categorical(y_encoded)
 
-    NUM_CLASSES = len(dummy_y[0])
+    NUM_CLASSES = len(y_encoded[0])
 
     instances_x = {}
     instances_y = {}
 
-    for i in range(len(Y)):
-        if Y[i] not in instances_x:
-            instances_x[Y[i]] = []
-            instances_y[Y[i]] = []
-        instances_x[Y[i]].append(X_minmax[i])
-        instances_y[Y[i]].append(dummy_y[i])
+    for i in range(len(y)):
+        if y[i] not in instances_x:
+            instances_x[y[i]] = []
+            instances_y[y[i]] = []
+        instances_x[y[i]].append(x_normalized[i])
+        instances_y[y[i]].append(y_encoded[i])
 
     # Get the number of malicious and benign instances
     # Set the number of benign instances to malicious * 2
-    num_mal = 0
-    for key, value in instances_x.items():
-        if key != 'Benign':
-            num_mal = num_mal + len(value)
-
-            MAX_FEATURES[key] = [max(idx) for idx in zip(*value)]
+    num_mal = calculate_mean_stdev(instances_x)
 
     NUM_MALICIOUS_INSTANCES = num_mal
     NUM_BENIGN_INSTANCES = num_mal
@@ -253,25 +155,38 @@ def partition_dataset_multiclass(w):
 
     RAW_PARTITION_SIZES = partition_sizes
 
-    partitions_X = {}
-    partitions_Y = {}
+    partitions_x = {}
+    partitions_y = {}
 
+    # Iterate through all folds
     for i in range(KFOLDS):
-        if i not in partitions_X:
-            partitions_X[i] = []
-            partitions_Y[i] = []
+
+        # Check if the current index is in our partitions
+        # If not, create a partition with the key i
+        if i not in partitions_x:
+            partitions_x[i] = []
+            partitions_y[i] = []
+
+        # for all key,value pairs in our instances_x dictionary
         for key, ins in instances_x.items():
+
+            # For x in the range of the partition size of this type of sample
             for x in range(partition_sizes[key]):
-                partitions_X[i].append(ins.pop(0))
-                partitions_Y[i].append(instances_y[key].pop(0))
+
+                # Get a random index to pop from the sample list
+                index = random.randrange(len(ins))
+
+                # Pop the randomly selected sample and append to our partitions array
+                partitions_x[i].append(ins.pop(index))
+                partitions_y[i].append(instances_y[key].pop(index))
 
     global PARTITION_X
     global PARTITION_Y
 
-    PARTITION_X = partitions_X
-    PARTITION_Y = partitions_Y
+    PARTITION_X = partitions_x
+    PARTITION_Y = partitions_y
 
-    size_of_partitions = len(partitions_X[0])
+    size_of_partitions = len(partitions_x[0])
 
     w.write("Number of Benign Instances: " + str(NUM_BENIGN_INSTANCES) + "\n")
     w.write("Number of Malicious Instances: " + str(NUM_MALICIOUS_INSTANCES) + "\n")
@@ -282,6 +197,32 @@ def partition_dataset_multiclass(w):
     w.close()
 
     print('Dataset partitioning finished')
+
+
+def calculate_mean_stdev(instances_x):
+    global MAX_FEATURES
+    global std_devs
+
+    num_mal = 0
+    for key, value in instances_x.items():
+        if key != 'Benign':
+            num_mal = num_mal + len(value)
+
+            MAX_FEATURES[key] = []
+
+            for idx in zip(*value):
+                mean = sum(idx) / len(idx)
+                median = statistics.median(idx)
+                std = statistics.stdev(idx)
+                mad = stats.median_absolute_deviation(idx)
+
+                max_val = max(idx)
+                min_val = min(idx)
+
+                MAX_FEATURES[key].append((median, mad, std))
+
+        # MAX_FEATURES[key] = [max(idx) for idx in zip(*value)]
+    return num_mal
 
 
 def get_partitions():

@@ -1,6 +1,0 @@
-Number of Benign Instances: 2493
-Number of Malicious Instances: 2493
-Number of folds: 10
-Number of FTP-BruteForce Instances per fold 113
-Number of SSH-Bruteforce Instances per fold 135
-Number of Benign Instances per fold 249

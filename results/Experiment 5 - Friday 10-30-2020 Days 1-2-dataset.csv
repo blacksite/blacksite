@@ -1,8 +1,0 @@
-Number of Benign Instances: 866894
-Number of Malicious Instances: 433447
-Number of folds: 10
-Number of Benign Instances per fold 86689
-Number of FTP-BruteForce Instances per fold 19336
-Number of SSH-Bruteforce Instances per fold 18758
-Number of DoS attacks-GoldenEye Instances per fold 4150
-Number of DoS attacks-Slowloris Instances per fold 1099
