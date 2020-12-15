@@ -48,9 +48,9 @@ def start_experiment():
     else:
         print("Successfully created the directory")
 
-    # filename = '../data/Day1.csv,../data/Day2.csv'
+    filename = '../data/Day1.csv,../data/Day2.csv,../data/Day3.csv,../data/Day4.csv'
     # filename = '../data/test.csv'
-    filename = '../data/Day1.csv'
+    # filename = '../data/Day1.csv'
     w_dataset = open(result_directory + "/dataset.csv", "w")
     dataset.read_from_file(w_dataset, filename)
 
@@ -64,21 +64,21 @@ def start_experiment():
     grizzly.set_common(detectors, validated_instances, suspicious_instances, dataset)
     panda.set_common(detectors, new_instances, suspicious_instances, dataset)
 
-    std_devs = [1, 2, 3]
-    num_detectors = [1000, 2500, 5000]
-    writers = {}
-
-    for s in std_devs:
-        for n in num_detectors:
-            writers[s+n] = open(result_directory + "/dnn-detectors-" + str(s) + "-" + str(n) + ".csv", "w")
-
-            writers[s+n].write("{:^30s}".format("Accuracy"))
-            writers[s + n].write(",{:^30s}".format("r-value"))
-            for c in dataset.CLASSES:
-                writers[s+n].write(
-                        ",{:^30s},{:^30s}".format(c + "-correct", c + "-not-correct"))
-            writers[s+n].write("\n")
-            writers[s+n].flush()
+    # std_devs = [1]
+    # num_detectors = [100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]
+    # writers = {}
+    #
+    # for s in std_devs:
+    #     for n in num_detectors:
+    #         writers[s+n] = open(result_directory + "/dnn-detectors-" + str(s) + "-" + str(n) + ".csv", "w")
+    #
+    #         writers[s+n].write("{:^30s}".format("Accuracy"))
+    #         writers[s + n].write(",{:^30s}".format("r-value"))
+    #         for c in dataset.CLASSES:
+    #             writers[s+n].write(
+    #                     ",{:^30s},{:^30s}".format(c + "-correct", c + "-not-correct"))
+    #         writers[s+n].write("\n")
+    #         writers[s+n].flush()
 
     for i in range(dataset.KFOLDS):
 
@@ -89,10 +89,10 @@ def start_experiment():
                     # else:
             grizzly.experimental_train_dnn(w_dnn, i)
 
-            for s in std_devs:
-                for n in num_detectors:
-                    panda.evaluate_dnn(writers[s+n], grizzly, i, n, s)
-                        # panda.evaluate_nsa(w_detectors_nsa, i)
+            # for s in std_devs:
+            #     for n in num_detectors:
+            #         panda.evaluate_dnn(writers[s+n], grizzly, i, n, s)
+            #             # panda.evaluate_nsa(w_detectors_nsa, i)
 
         except Exception as e:
             logging.error(e)

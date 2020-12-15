@@ -42,15 +42,16 @@ def set_common(detectors, validated_instances, suspicious_instances, dataset):
 def define_model_multiclass():
     global DATASET
 
+    hidden_nodes = int((DATASET.get_number_of_features() + DATASET.NUM_CLASSES) / 2)
     # create and fit the DNN network
     model = Sequential()
-    model.add(Dense(70, input_dim=DATASET.get_number_of_features(), activation='relu'))
-    model.add(Dense(60, activation='relu'))
-    model.add(Dense(50, activation='relu'))
-    model.add(Dense(40, activation='relu'))
-    model.add(Dense(30, activation='relu'))
-    model.add(Dense(20, activation='relu'))
-    model.add(Dense(10, activation='relu'))
+    model.add(Dense(hidden_nodes, input_dim=DATASET.get_number_of_features(), activation='relu'))
+    # model.add(Dense(60, activation='relu'))
+    # model.add(Dense(50, activation='relu'))
+    # model.add(Dense(40, activation='relu'))
+    # model.add(Dense(30, activation='relu'))
+    # model.add(Dense(20, activation='relu'))
+    # model.add(Dense(10, activation='relu'))
     model.add(Dense(DATASET.NUM_CLASSES, activation='softmax'))
     model.compile(loss='categorical_crossentropy', optimizer='adam',
                   metrics=["accuracy"])
