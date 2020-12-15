@@ -1,0 +1,2 @@
+           Accuracy           ,        Benign-correct        ,      Benign-not-correct      ,DoS attacks-GoldenEye-correct ,DoS attacks-GoldenEye-not-correct,DoS attacks-Slowloris-correct ,DoS attacks-Slowloris-not-correct
+            99.94             ,             5245             ,              4               ,             4150             ,              0               ,             1097             ,              2               

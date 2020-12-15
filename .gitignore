@@ -1,5 +1,8 @@
 
-*.csv
-*.xlsx
 data/KDDTest+.txt
 data/KDDTrain+.txt
+data/Day1.csv
+data/Day2.csv
+data/Day3.csv
+data/Day4.csv
+data/spreedsheet-test.xlsx

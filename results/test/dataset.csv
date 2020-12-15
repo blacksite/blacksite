@@ -1,0 +1,6 @@
+Number of Benign Instances: 52498
+Number of Malicious Instances: 52498
+Number of folds: 10
+Number of Benign Instances per fold 5249
+Number of DoS attacks-GoldenEye Instances per fold 4150
+Number of DoS attacks-Slowloris Instances per fold 1099
