@@ -1,0 +1,4 @@
+Calculate the max and min value for features from malicious instances during training
+The Detector randomly generates two values between the min and max value for a given feature
+The lesser value is the lower bound and the larger value is the upper bound for the feature
+If a given feature's maximum value is 0.0, then the bounds for that given feature in the detector are both 0.0

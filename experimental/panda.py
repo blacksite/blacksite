@@ -1,6 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor, wait, as_completed
 import threading
-from models import NeuralNetworkNSA, StandardNSA
+from models import NeuralNetworkNSA
 import numpy as np
 
 MAX_DETECTORS = 1000
@@ -23,6 +23,7 @@ best_tn = 0.0
 best_fn = 0.0
 best_results = []
 LOCK = threading.Lock()
+model = NeuralNetworkNSA()
 
 
 def set_common(detectors, new_instances, suspicious_instances, dataset):
@@ -38,40 +39,31 @@ def set_common(detectors, new_instances, suspicious_instances, dataset):
     DATASET = dataset
 
 
-def evaluate_nsa(w, index):
-    global DATASET
-
-    model = StandardNSA()
-
-    partitions_X, partitions_Y = DATASET.get_partitions()
-
-    train_x, train_y = [], []
-
-    for key, value in partitions_X.items():
-        if key != index:
-            train_x.extend(value)
-            train_y.extend(partitions_Y[key])
-
-    test_x, test_y = partitions_X[index], partitions_Y[index]
-
-    model.fit(np.array(train_x), np.array(train_y), DATASET.MAX_FEATURES, DATASET.CLASSES)
-
-
-def evaluate_dnn(w, grizzly, index, number_of_detectors_per_class=1000, std_dev=1):
-    global DATASET
+def initialize_model():
+    global model
 
     model = NeuralNetworkNSA()
-    model.fit(DATASET.get_number_of_features(), grizzly, DATASET.MAX_FEATURES, number_of_detectors_per_class=number_of_detectors_per_class, std_dev=std_dev)
+
+
+def evaluate_dnn(w, grizzly, index, number_of_detectors_per_class, std_dev):
+    global DATASET
+    global model
 
     partitions_X, partitions_Y = DATASET.get_partitions()
+    val_index = (index+1) % len(partitions_X)
+    val_x, val_y = partitions_X[val_index], partitions_Y[val_index]
     test_x, test_y = partitions_X[index], partitions_Y[index]
+
+    model.fit(np.array(val_x, dtype='f4'), np.array(val_y, dtype='i4'), DATASET.CLASSES,
+              DATASET.get_number_of_features(), grizzly, DATASET.MAX_FEATURES,
+              number_of_detectors_per_class=number_of_detectors_per_class, std_dev=std_dev)
 
     results = model.predict(np.array(test_x, dtype='f4'), np.array(test_y, dtype='i4'), DATASET.CLASSES)
 
     # print("Finished dnn detector testing for partition " + str(index))
-    w.write('{:^30.2f}'.format(results['Accuracy'] * 100.0))
-    w.write('{:^30s}'.format(str(results['r-value'])))
+    w.write('{:^40.2f}'.format(results['Accuracy'] * 100.0))
+    w.write(',{:^40s}'.format(str(results['r-value'])))
     for c in DATASET.CLASSES:
-        w.write(',{:^30.0f},{:^30.0f}'.format(results[c]['correct'], results[c]['incorrect']))
+        w.write(',{:^40.0f},{:^40.0f}'.format(results[c]['correct'], results[c]['incorrect']))
     w.write("\n")
     w.flush()

@@ -106,9 +106,9 @@ def experimental_train_dnn(w, index=None, fit=True):
         results = calculate_results(prediction, test_y)
     else:
         results = DNN.evaluate(np.array(test_x), np.array(test_y))
-    w.write('{:^30.2f}'.format(results[0] * 100.0))
+    w.write('{:^40.2f}'.format(results[0] * 100.0))
     for x in range(1, len(results)):
-        w.write(',{:^30.0f}'.format(results[x]))
+        w.write(',{:^40.0f}'.format(results[x]))
     w.write('\n')
     w.flush()
 

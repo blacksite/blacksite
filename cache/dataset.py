@@ -20,7 +20,7 @@ PARTITION_X = []
 PARTITION_Y = []
 NUM_FEATURES = 76
 NUM_CLASSES = 0
-MAX_FEATURES = {}
+MAX_FEATURES = []
 CLASSES = []
 std_devs = {}
 
@@ -68,6 +68,12 @@ def read_from_file(w, filename):
                     break
             dataframe = pandas.read_csv(f, engine='python')
             dataframe.fillna(0)
+
+            if 'Day4' in f:
+                del dataframe['Flow ID']
+                del dataframe['Src IP']
+                del dataframe['Src Port']
+                del dataframe['Dst IP']
             LOCK.acquire()
             DATASET.extend(dataframe.values)
             LOCK.release()
@@ -105,13 +111,15 @@ def partition_data_set(w):
             print(str(d[3:-1]))
 
     # Convert X and Y into numpy arrays
-    x = np.array(x)
+    x = np.array(x, dtype='f8')
     y = np.array(y)
 
     # Normalize X features
     scalar = MinMaxScaler()
     scalar.fit(x)
     x_normalized = scalar.transform(x)
+
+    calculate_total_mean_mad(x_normalized)
 
     # Transform y vector into a matrix
     encoder = LabelEncoder()
@@ -199,17 +207,44 @@ def partition_data_set(w):
     print('Dataset partitioning finished')
 
 
+# def calculate_mean_stdev(instances_x):
+#     # global MAX_FEATURES
+#     global std_devs
+#
+#     num_mal = 0
+#     for key, value in instances_x.items():
+#         if key != 'Benign':
+#             num_mal = num_mal + len(value)
+#
+#             MAX_FEATURES[key] = []
+#
+#             for idx in zip(*value):
+#                 mean = sum(idx) / len(idx)
+#                 median = statistics.median(idx)
+#                 std = statistics.stdev(idx)
+#                 mad = stats.median_absolute_deviation(idx)
+#
+#                 max_val = max(idx)
+#                 min_val = min(idx)
+#
+#                 MAX_FEATURES[key].append((median, mad, std))
+#
+#         # MAX_FEATURES[key] = [max(idx) for idx in zip(*value)]
+#     return num_mal
+
+
 def calculate_mean_stdev(instances_x):
     global MAX_FEATURES
     global std_devs
+
+    MAX_FEATURES = [(0, 0)] * len(instances_x['Benign'][0])
 
     num_mal = 0
     for key, value in instances_x.items():
         if key != 'Benign':
             num_mal = num_mal + len(value)
 
-            MAX_FEATURES[key] = []
-
+            i = 0
             for idx in zip(*value):
                 mean = sum(idx) / len(idx)
                 median = statistics.median(idx)
@@ -219,20 +254,41 @@ def calculate_mean_stdev(instances_x):
                 max_val = max(idx)
                 min_val = min(idx)
 
-                MAX_FEATURES[key].append((median, mad, std))
+                MAX_FEATURES[i] = (min(MAX_FEATURES[i][1], min_val), max(MAX_FEATURES[i][0], max_val))
+
+                i += 1
 
         # MAX_FEATURES[key] = [max(idx) for idx in zip(*value)]
     return num_mal
 
 
+def calculate_total_mean_mad(x):
+    global MAX_FEATURES
+    global std_devs
+
+    for idx in zip(*x):
+        mean = sum(idx) / len(idx)
+        median = statistics.median(idx)
+        std = statistics.stdev(idx)
+        mad = stats.median_absolute_deviation(idx)
+
+        max_val = max(idx)
+        min_val = min(idx)
+
+        MAX_FEATURES.append((median, mad))
+
+
+def get_max_features():
+    global MAX_FEATURES
+    return MAX_FEATURES
+
+
 def get_partitions():
     global PARTITION_X
     global PARTITION_Y
-
     return PARTITION_X, PARTITION_Y
 
 
 def get_number_of_features():
     global NUM_FEATURES
-
     return NUM_FEATURES

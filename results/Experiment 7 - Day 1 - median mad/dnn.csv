@@ -1,8 +1,0 @@
-           Accuracy           ,        Benign-correct        ,      Benign-not-correct      ,    FTP-BruteForce-correct    ,  FTP-BruteForce-not-correct  ,    SSH-Bruteforce-correct    ,  SSH-Bruteforce-not-correct  
-            99.98             ,            38083             ,              11              ,            19336             ,              0               ,            18757             ,              1               
-            99.99             ,            38088             ,              6               ,            19335             ,              1               ,            18757             ,              1               
-            99.99             ,            38089             ,              5               ,            19336             ,              0               ,            18758             ,              0               
-            100.00            ,            38093             ,              1               ,            19335             ,              1               ,            18758             ,              0               
-            100.00            ,            38094             ,              0               ,            19336             ,              0               ,            18757             ,              1               
-            99.99             ,            38093             ,              1               ,            19336             ,              0               ,            18755             ,              3               
-            99.99             ,            38085             ,              9               ,            19336             ,              0               ,            18758             ,              0               
