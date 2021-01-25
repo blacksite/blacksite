@@ -59,15 +59,10 @@ def define_model_multiclass():
 
 
 def define_model():
+    hidden_nodes = int((DATASET.get_number_of_features() + DATASET.NUM_CLASSES) / 2)
     # create and fit the DNN network
     model = Sequential()
-    model.add(Dense(70, input_dim=DATASET.get_number_of_features(), activation='relu'))
-    model.add(Dense(60, activation='relu'))
-    model.add(Dense(50, activation='relu'))
-    model.add(Dense(40, activation='relu'))
-    model.add(Dense(30, activation='relu'))
-    model.add(Dense(20, activation='relu'))
-    model.add(Dense(10, activation='relu'))
+    model.add(Dense(hidden_nodes, input_dim=DATASET.get_number_of_features(), activation='relu'))
     model.add(Dense(1, activation='sigmoid'))
     model.compile(loss='binary_crossentropy', optimizer='adam',
                   metrics=["accuracy", km.TruePositives(), km.FalsePositives(), km.TrueNegatives(),
@@ -109,6 +104,43 @@ def experimental_train_dnn(w, index=None, fit=True):
     w.write('{:^40.2f}'.format(results[0] * 100.0))
     for x in range(1, len(results)):
         w.write(',{:^40.0f}'.format(results[x]))
+    w.write('\n')
+    w.flush()
+
+    DNN = model
+
+    print("Finished dnn training " + str(index))
+
+
+def evaluate_ind_dnn(w, index, key):
+    global NUM_BENIGN_INSTANCES
+    global NUM_MALICIOUS_INSTANCES
+    global RAW_PARTITION_SIZES
+    global BEST_ACCURACY
+    global DNN
+    global DATASET
+
+    partitions_X, partitions_Y = DATASET.get_partitions()
+
+    print("Starting dnn training for partition " +str(index))
+
+    # create training and testing x and y datasets from the kFolds
+    training_x, training_y = [], []
+    test_x, test_y = partitions_X[key][index], partitions_Y[key][index]
+
+    for x in range(DATASET.KFOLDS):
+        if x != index:
+            training_x.extend(partitions_X[key][x])
+            training_y.extend(partitions_Y[key][x])
+
+    # begin training the model
+    model = define_model()
+    model.fit(np.array(training_x), np.array(training_y), BATCH_SIZE, epochs=100, verbose=2)
+    results = model.evaluate(np.array(test_x), np.array(test_y))
+
+    w.write('{:^10.2f}'.format(results[1] * 100.0))
+    for x in range(2, len(results)):
+        w.write(',{:^10.0f}'.format(results[x]))
     w.write('\n')
     w.flush()
 
@@ -184,10 +216,12 @@ def classify(value):
     if DNN:
 
             DNN_LOCK.acquire()
-            classification = DNN.predict(np.array([value]))
+            # classification = DNN.predict(np.array([value]))
+            classification = DNN.predict_classes(np.array([value]))[0][0]
             DNN_LOCK.release()
 
-            return list(classification[0]).index(max(list(classification[0])))
+            return classification
+            # return list(classification[0]).index(max(list(classification[0])))
 
     else:
         print("No DNN available")

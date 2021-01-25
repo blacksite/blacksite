@@ -4,4 +4,5 @@ All features with maxes above 0.0 were considered
 The lesser value is the lower bound and the larger value is the upper bound for the feature
 If a given feature's maximum value is 0.0, then the bounds for that given feature in the detector are both 0.0
 The best r-value for the detectors was determined by iterating through all possible r-value [1..76] and finding which r-value
-performed best on the training set. The training consists of only one fold. The fold after the test set.
+performed best on the training set. The training consists of all folds not used in the test set.
+Prioritized Accuracy
