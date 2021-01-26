@@ -154,7 +154,7 @@ def start_ind_experiment():
     filename = '../data/Day1.csv,../data/Day2.csv,../data/Day3.csv,../data/Day4.csv,../data/Day5.csv,' \
                '../data/Day8.csv,../data/Day9.csv,../data/Day10.csv'
     # filename = '../data/Day2.csv,../data/Day3.csv,../data/Day4.csv,../data/Day5.csv'
-    filename = '../data/Day1.csv'
+    filename = '../data/Day2.csv'
     # filename = '../data/test.csv'
     w_dataset = open(result_directory + "/dataset.csv", "w")
     dataset.read_from_file(w_dataset, filename)
@@ -162,7 +162,7 @@ def start_ind_experiment():
     grizzly.set_common(detectors, validated_instances, suspicious_instances, dataset)
     panda.set_common(detectors, new_instances, suspicious_instances, dataset)
 
-    num_detectors = [10000, 25000, 50000, 100000]
+    num_detectors = [1000, 2500, 5000, 10000]
 
     for key, value in dataset.PARTITION_X.items():
         w_dnn = open(result_directory + "/" + key + "-dnn.csv", "w")
