@@ -271,9 +271,23 @@ def partition_ind_data_set(w):
     num_mal = calculate_mean_stdev(instances_x)
 
     NUM_MALICIOUS_INSTANCES = num_mal
-    NUM_BENIGN_INSTANCES = num_mal
-    if NUM_BENIGN_INSTANCES > len(instances_x['Benign']):
-        NUM_BENIGN_INSTANCES = len(instances_x['Benign'])
+    # NUM_BENIGN_INSTANCES = num_mal
+    # if NUM_BENIGN_INSTANCES > len(instances_x['Benign']):
+    #     NUM_BENIGN_INSTANCES = len(instances_x['Benign'])
+    NUM_BENIGN_INSTANCES = len(instances_x['Benign'])
+
+    max_key = 'Benign'
+    if NUM_MALICIOUS_INSTANCES > NUM_BENIGN_INSTANCES:
+
+        for key, value in instances_x.items():
+            if key != 'Benign':
+                proportion = float(len(value)) / NUM_MALICIOUS_INSTANCES
+                number_included = int(proportion * NUM_BENIGN_INSTANCES)
+                instances_x[key] = random.sample(instances_x[key], number_included)
+
+
+
+
 
     # Limit the number of benign instances
     # instances['Benign'] = instances['Benign'][:NUM_BENIGN_INSTANCES]

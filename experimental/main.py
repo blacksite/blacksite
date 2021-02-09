@@ -154,8 +154,8 @@ def start_ind_experiment():
     filename = '../data/Day1.csv,../data/Day2.csv,../data/Day3.csv,../data/Day4.csv,../data/Day5.csv,' \
                '../data/Day8.csv,../data/Day9.csv,../data/Day10.csv'
     # filename = '../data/Day2.csv,../data/Day3.csv,../data/Day4.csv,../data/Day5.csv'
-    filename = '../data/Day2.csv'
-    # filename = '../data/test.csv'
+    # filename = '../data/Day8.csv,../data/Day9.csv'
+    filename = '../data/Day10.csv'
     w_dataset = open(result_directory + "/dataset.csv", "w")
     dataset.read_from_file(w_dataset, filename)
 

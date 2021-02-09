@@ -1,0 +1,6 @@
+Number of Benign Instances: 446772
+Number of Malicious Instances: 601802
+Number of folds: 10
+Number of Benign Instances per fold 44677
+Number of DoS attacks-SlowHTTPTest Instances per fold 10385
+Number of DoS attacks-Hulk Instances per fold 34291

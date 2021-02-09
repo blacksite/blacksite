@@ -1,0 +1,7 @@
+Number of Benign Instances: 2096222
+Number of Malicious Instances: 928
+Number of folds: 10
+Number of Benign Instances per fold 209622
+Number of Brute Force -Web Instances per fold 61
+Number of Brute Force -XSS Instances per fold 23
+Number of SQL Injection Instances per fold 8
