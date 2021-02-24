@@ -1,0 +1,5 @@
+Number of Benign Instances: 762384
+Number of Malicious Instances: 286191
+Number of folds: 10
+Number of Benign Instances per fold 76238
+Number of Bot Instances per fold 28619

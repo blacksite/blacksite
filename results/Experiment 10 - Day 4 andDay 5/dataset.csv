@@ -1,0 +1,6 @@
+Number of Benign Instances: 7733390
+Number of Malicious Instances: 1262203
+Number of folds: 10
+Number of Benign Instances per fold 773339
+Number of DDoS attacks-LOIC-HTTP Instances per fold 57619
+Number of DDOS attack-HOIC Instances per fold 68601

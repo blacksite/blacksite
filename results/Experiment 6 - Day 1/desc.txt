@@ -1,0 +1,13 @@
+Calculate the max and min value for features from each type of malicious instances during training
+A DNN is trained and tested on each type of malicious instance
+A detector set is trained and tested for each type of malicious instance
+A given detector set consists of detectors, which are randomly generated
+The Detector randomly generates two values between the min and max value for a given feature of a particular type of malicious instance
+All features with maxes above 0.0 were considered
+The lesser value is the lower bound and the larger value is the upper bound for the feature
+If a given feature's maximum value is 0.0, then the bounds for that given feature in the detector are both 0.0
+The best r-value for the generated detector set was determined by iterating through all possible r-value [1..76] and finding which r-value
+performed best on the training set. The training consists of all folds not used in the test set.
+The detector set and best r-value are then evaluated on the test set to find accuracy
+This process is repeated for each fold
+The entire process is then repeated for each type of malicious instance
