@@ -1,4 +1,6 @@
 from os import path
+from os import listdir
+from os.path import isfile, join
 import pandas
 from sklearn.preprocessing import normalize, MinMaxScaler
 import numpy as np
@@ -82,6 +84,23 @@ def read_from_file(w, filename):
     partition_ind_data_set(w)
 
 
+def read_from_mqtt_file(w, path):
+    print('Loading data set started')
+    global DATA_SET
+
+    files = [f for f in listdir(path) if isfile(join(path, f))]
+
+    for f in files:
+        print(f)
+        file_path = path + '\\' + f
+        df = pandas.read_csv(file_path, engine='python')
+        df.fillna(0)
+        DATASET.extend(df.values)
+
+    print('Loading data set finished')
+    partition_ind_data_set(w)
+
+
 def partition_data_set(w):
     #   1. convert all string labels to int
     #   2. for each label, create a new dictionary key
@@ -105,7 +124,7 @@ def partition_data_set(w):
     x, y = [], []
 
     for d in DATASET:
-        x.append(np.array(d[3:-1]))
+        x.append(np.array(d[6:-1]))
         y.append(d[-1])
         if "Flow Duration" in d[3:-1]:
             print(str(d[3:-1]))
@@ -230,7 +249,7 @@ def partition_ind_data_set(w):
     x, y = [], []
 
     for d in DATASET:
-        x.append(np.array(d[3:-1]))
+        x.append(np.array(d[7:-1]))
         y.append(d[-1])
         if "Flow Duration" in d[3:-1]:
             print(str(d[3:-1]))
