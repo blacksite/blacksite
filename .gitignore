@@ -12,3 +12,354 @@ data/Day6.csv
 data/Day7.csv
 data/Day8.csv
 data/Day9.csv
+data/biflow_mqtt_bruteforce.csv
+data/biflow_normal.csv
+data/biflow_scan_A.csv
+data/biflow_scan_sU.csv
+data/biflow_sparta.csv
+data/biflow_normal.csv
+data/biflow_scan_A.csv
+data/biflow_scan_sU.csv
+data/biflow_sparta.csv
+data/test.csv
+experimental/__pycache__/grizzly.cpython-37.pyc
+experimental/__pycache__/grizzly_meanshift.cpython-37.pyc
+experimental/__pycache__/grizzly_meanshift_single_validator.cpython-37.pyc
+experimental/__pycache__/panda.cpython-37.pyc
+experimental/grizzly.py
+experimental/grizzly_meanshift.py
+experimental/grizzly_meanshift_single_validator.py
+experimental/main.py
+experimental/main_NSLKDD.py
+experimental/main_single_validator.py
+experimental/panda.py
+experimental/panda_old.py
+results/Experiment 1 - Day 1-5, 8-10/dataset.csv
+results/Experiment 1 - Day 1-5, 8-10/desc.txt
+results/Experiment 1 - Day 1-5, 8-10/dnn-detectors-1-10.csv
+results/Experiment 1 - Day 1-5, 8-10/dnn-detectors-1-100.csv
+results/Experiment 1 - Day 1-5, 8-10/dnn-detectors-1-1000.csv
+results/Experiment 1 - Day 1-5, 8-10/dnn-detectors-1-25.csv
+results/Experiment 1 - Day 1-5, 8-10/dnn-detectors-1-250.csv
+results/Experiment 1 - Day 1-5, 8-10/dnn-detectors-1-50.csv
+results/Experiment 1 - Day 1-5, 8-10/dnn-detectors-1-500.csv
+results/Experiment 1 - Day 1-5, 8-10/dnn.csv
+results/Experiment 1/Benign-100-ais.csv
+results/Experiment 1/Benign-1000-ais.csv
+results/Experiment 1/Benign-250-ais.csv
+results/Experiment 1/Benign-500-ais.csv
+results/Experiment 1/biflow_mqtt_bruteforce-100-ais.csv
+results/Experiment 1/biflow_mqtt_bruteforce-1000-ais.csv
+results/Experiment 1/biflow_mqtt_bruteforce-250-ais.csv
+results/Experiment 1/biflow_mqtt_bruteforce-500-ais.csv
+results/Experiment 1/biflow_mqtt_bruteforce-dnn.csv
+results/Experiment 1/biflow_scan_A-100-ais.csv
+results/Experiment 1/biflow_scan_A-1000-ais.csv
+results/Experiment 1/biflow_scan_A-250-ais.csv
+results/Experiment 1/biflow_scan_A-500-ais.csv
+results/Experiment 1/biflow_scan_A-dnn.csv
+results/Experiment 1/biflow_scan_sU-100-ais.csv
+results/Experiment 1/biflow_scan_sU-1000-ais.csv
+results/Experiment 1/biflow_scan_sU-250-ais.csv
+results/Experiment 1/biflow_scan_sU-500-ais.csv
+results/Experiment 1/biflow_scan_sU-dnn.csv
+results/Experiment 1/dataset.csv
+results/Experiment 10 - Day 4 andDay 5/dataset.csv
+results/Experiment 10 - Day 4 andDay 5/DDOS attack-HOIC-dnn.csv
+results/Experiment 10 - Day 4 andDay 5/DDoS attacks-LOIC-HTTP-dnn.csv
+results/Experiment 10 - Day 4 andDay 5/dnn-detectors-DDOS attack-HOIC-1000.csv
+results/Experiment 10 - Day 4 andDay 5/dnn-detectors-DDOS attack-HOIC-10000.csv
+results/Experiment 10 - Day 4 andDay 5/dnn-detectors-DDOS attack-HOIC-2500.csv
+results/Experiment 10 - Day 4 andDay 5/dnn-detectors-DDOS attack-HOIC-5000.csv
+results/Experiment 10 - Day 4 andDay 5/dnn-detectors-DDoS attacks-LOIC-HTTP-1000.csv
+results/Experiment 10 - Day 4 andDay 5/dnn-detectors-DDoS attacks-LOIC-HTTP-10000.csv
+results/Experiment 10 - Day 4 andDay 5/dnn-detectors-DDoS attacks-LOIC-HTTP-2500.csv
+results/Experiment 10 - Day 4 andDay 5/dnn-detectors-DDoS attacks-LOIC-HTTP-5000.csv
+results/Experiment 11 - Day 6 and Day 7/Brute Force -Web-dnn.csv
+results/Experiment 11 - Day 6 and Day 7/Brute Force -XSS-dnn.csv
+results/Experiment 11 - Day 6 and Day 7/dataset.csv
+results/Experiment 11 - Day 6 and Day 7/dnn-detectors-Brute Force -Web-1000.csv
+results/Experiment 11 - Day 6 and Day 7/dnn-detectors-Brute Force -Web-10000.csv
+results/Experiment 11 - Day 6 and Day 7/dnn-detectors-Brute Force -Web-2500.csv
+results/Experiment 11 - Day 6 and Day 7/dnn-detectors-Brute Force -Web-5000.csv
+results/Experiment 11 - Day 6 and Day 7/dnn-detectors-Brute Force -XSS-1000.csv
+results/Experiment 11 - Day 6 and Day 7/dnn-detectors-Brute Force -XSS-10000.csv
+results/Experiment 11 - Day 6 and Day 7/dnn-detectors-Brute Force -XSS-2500.csv
+results/Experiment 11 - Day 6 and Day 7/dnn-detectors-Brute Force -XSS-5000.csv
+results/Experiment 11 - Day 6 and Day 7/dnn-detectors-SQL Injection-1000.csv
+results/Experiment 11 - Day 6 and Day 7/dnn-detectors-SQL Injection-10000.csv
+results/Experiment 11 - Day 6 and Day 7/dnn-detectors-SQL Injection-2500.csv
+results/Experiment 11 - Day 6 and Day 7/dnn-detectors-SQL Injection-5000.csv
+results/Experiment 11 - Day 6 and Day 7/SQL Injection-dnn.csv
+results/Experiment 12 - Day 8 and Day 9/dataset.csv
+results/Experiment 12 - Day 8 and Day 9/dnn-detectors-Infilteration-1000.csv
+results/Experiment 12 - Day 8 and Day 9/dnn-detectors-Infilteration-10000.csv
+results/Experiment 12 - Day 8 and Day 9/dnn-detectors-Infilteration-2500.csv
+results/Experiment 12 - Day 8 and Day 9/dnn-detectors-Infilteration-5000.csv
+results/Experiment 12 - Day 8 and Day 9/Infilteration-dnn.csv
+results/Experiment 13 - Day 10/Bot-dnn.csv
+results/Experiment 13 - Day 10/dataset.csv
+results/Experiment 13 - Day 10/dnn-detectors-Bot-1000.csv
+results/Experiment 13 - Day 10/dnn-detectors-Bot-10000.csv
+results/Experiment 13 - Day 10/dnn-detectors-Bot-2500.csv
+results/Experiment 13 - Day 10/dnn-detectors-Bot-5000.csv
+results/Experiment 2 - Day 1-5, 8-10/dataset.csv
+results/Experiment 2 - Day 1-5, 8-10/desc.txt
+results/Experiment 2 - Day 1-5, 8-10/dnn-detectors-1-10.csv
+results/Experiment 2 - Day 1-5, 8-10/dnn-detectors-1-100.csv
+results/Experiment 2 - Day 1-5, 8-10/dnn-detectors-1-1000.csv
+results/Experiment 2 - Day 1-5, 8-10/dnn-detectors-1-25.csv
+results/Experiment 2 - Day 1-5, 8-10/dnn-detectors-1-250.csv
+results/Experiment 2 - Day 1-5, 8-10/dnn-detectors-1-50.csv
+results/Experiment 2 - Day 1-5, 8-10/dnn-detectors-1-500.csv
+results/Experiment 2 - Day 1-5, 8-10/dnn.csv
+results/Experiment 2/Benign-100-ais.csv
+results/Experiment 2/Benign-1000-ais.csv
+results/Experiment 2/Benign-250-ais.csv
+results/Experiment 2/Benign-500-ais.csv
+results/Experiment 2/biflow_mqtt_bruteforce-100-ais.csv
+results/Experiment 2/biflow_mqtt_bruteforce-1000-ais.csv
+results/Experiment 2/biflow_mqtt_bruteforce-250-ais.csv
+results/Experiment 2/biflow_mqtt_bruteforce-500-ais.csv
+results/Experiment 2/biflow_mqtt_bruteforce-dnn.csv
+results/Experiment 2/biflow_scan_A-100-ais.csv
+results/Experiment 2/biflow_scan_A-1000-ais.csv
+results/Experiment 2/biflow_scan_A-250-ais.csv
+results/Experiment 2/biflow_scan_A-500-ais.csv
+results/Experiment 2/biflow_scan_A-dnn.csv
+results/Experiment 2/biflow_scan_sU-100-ais.csv
+results/Experiment 2/biflow_scan_sU-1000-ais.csv
+results/Experiment 2/biflow_scan_sU-250-ais.csv
+results/Experiment 2/biflow_scan_sU-500-ais.csv
+results/Experiment 2/biflow_scan_sU-dnn.csv
+results/Experiment 2/dataset.csv
+results/Experiment 3 - All RNNs as validator/Benign-100-ais.csv
+results/Experiment 3 - All RNNs as validator/Benign-1000-ais.csv
+results/Experiment 3 - All RNNs as validator/Benign-250-ais.csv
+results/Experiment 3 - All RNNs as validator/Benign-500-ais.csv
+results/Experiment 3 - All RNNs as validator/biflow_mqtt_bruteforce-100-ais.csv
+results/Experiment 3 - All RNNs as validator/biflow_mqtt_bruteforce-1000-ais.csv
+results/Experiment 3 - All RNNs as validator/biflow_mqtt_bruteforce-250-ais.csv
+results/Experiment 3 - All RNNs as validator/biflow_mqtt_bruteforce-500-ais.csv
+results/Experiment 3 - All RNNs as validator/biflow_mqtt_bruteforce-dnn.csv
+results/Experiment 3 - All RNNs as validator/biflow_scan_A-100-ais.csv
+results/Experiment 3 - All RNNs as validator/biflow_scan_A-1000-ais.csv
+results/Experiment 3 - All RNNs as validator/biflow_scan_A-250-ais.csv
+results/Experiment 3 - All RNNs as validator/biflow_scan_A-500-ais.csv
+results/Experiment 3 - All RNNs as validator/biflow_scan_A-dnn.csv
+results/Experiment 3 - All RNNs as validator/biflow_scan_sU-100-ais.csv
+results/Experiment 3 - All RNNs as validator/biflow_scan_sU-1000-ais.csv
+results/Experiment 3 - All RNNs as validator/biflow_scan_sU-250-ais.csv
+results/Experiment 3 - All RNNs as validator/biflow_scan_sU-500-ais.csv
+results/Experiment 3 - All RNNs as validator/biflow_scan_sU-dnn.csv
+results/Experiment 3 - All RNNs as validator/dataset.csv
+results/Experiment 3 - Day 2-5 DoS Samples/dataset.csv
+results/Experiment 3 - Day 2-5 DoS Samples/dnn-detectors-1-10.csv
+results/Experiment 3 - Day 2-5 DoS Samples/dnn-detectors-1-100.csv
+results/Experiment 3 - Day 2-5 DoS Samples/dnn-detectors-1-1000.csv
+results/Experiment 3 - Day 2-5 DoS Samples/dnn-detectors-1-25.csv
+results/Experiment 3 - Day 2-5 DoS Samples/dnn-detectors-1-250.csv
+results/Experiment 3 - Day 2-5 DoS Samples/dnn-detectors-1-50.csv
+results/Experiment 3 - Day 2-5 DoS Samples/dnn-detectors-1-500.csv
+results/Experiment 3 - Day 2-5 DoS Samples/dnn.csv
+results/Experiment 4 - Day 1-5, 8-10/dataset.csv
+results/Experiment 4 - Day 1-5, 8-10/desc.txt
+results/Experiment 4 - Day 1-5, 8-10/dnn-detectors-1-10.csv
+results/Experiment 4 - Day 1-5, 8-10/dnn-detectors-1-100.csv
+results/Experiment 4 - Day 1-5, 8-10/dnn-detectors-1-1000.csv
+results/Experiment 4 - Day 1-5, 8-10/dnn-detectors-1-25.csv
+results/Experiment 4 - Day 1-5, 8-10/dnn-detectors-1-250.csv
+results/Experiment 4 - Day 1-5, 8-10/dnn-detectors-1-50.csv
+results/Experiment 4 - Day 1-5, 8-10/dnn-detectors-1-500.csv
+results/Experiment 4 - Day 1-5, 8-10/dnn.csv
+results/Experiment 4 - With 10.0.0.5/Benign-100-ais.csv
+results/Experiment 4 - With 10.0.0.5/Benign-1000-ais.csv
+results/Experiment 4 - With 10.0.0.5/Benign-250-ais.csv
+results/Experiment 4 - With 10.0.0.5/Benign-500-ais.csv
+results/Experiment 4 - With 10.0.0.5/biflow_mqtt_bruteforce-100-ais.csv
+results/Experiment 4 - With 10.0.0.5/biflow_mqtt_bruteforce-1000-ais.csv
+results/Experiment 4 - With 10.0.0.5/biflow_mqtt_bruteforce-250-ais.csv
+results/Experiment 4 - With 10.0.0.5/biflow_mqtt_bruteforce-500-ais.csv
+results/Experiment 4 - With 10.0.0.5/biflow_mqtt_bruteforce-dnn.csv
+results/Experiment 4 - With 10.0.0.5/biflow_scan_A-100-ais.csv
+results/Experiment 4 - With 10.0.0.5/biflow_scan_A-1000-ais.csv
+results/Experiment 4 - With 10.0.0.5/biflow_scan_A-250-ais.csv
+results/Experiment 4 - With 10.0.0.5/biflow_scan_A-500-ais.csv
+results/Experiment 4 - With 10.0.0.5/biflow_scan_A-dnn.csv
+results/Experiment 4 - With 10.0.0.5/biflow_scan_sU-100-ais.csv
+results/Experiment 4 - With 10.0.0.5/biflow_scan_sU-1000-ais.csv
+results/Experiment 4 - With 10.0.0.5/biflow_scan_sU-250-ais.csv
+results/Experiment 4 - With 10.0.0.5/biflow_scan_sU-500-ais.csv
+results/Experiment 4 - With 10.0.0.5/biflow_scan_sU-dnn.csv
+results/Experiment 4 - With 10.0.0.5/biflow_sparta-100-ais.csv
+results/Experiment 4 - With 10.0.0.5/biflow_sparta-1000-ais.csv
+results/Experiment 4 - With 10.0.0.5/biflow_sparta-250-ais.csv
+results/Experiment 4 - With 10.0.0.5/biflow_sparta-500-ais.csv
+results/Experiment 4 - With 10.0.0.5/biflow_sparta-dnn.csv
+results/Experiment 4 - With 10.0.0.5/dataset.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/Benign-100-ais.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/Benign-1000-ais.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/Benign-250-ais.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/Benign-500-ais.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/biflow_mqtt_bruteforce-100-ais.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/biflow_mqtt_bruteforce-1000-ais.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/biflow_mqtt_bruteforce-250-ais.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/biflow_mqtt_bruteforce-500-ais.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/biflow_mqtt_bruteforce-dnn.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/biflow_scan_A-100-ais.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/biflow_scan_A-1000-ais.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/biflow_scan_A-250-ais.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/biflow_scan_A-500-ais.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/biflow_scan_A-dnn.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/biflow_scan_sU-100-ais.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/biflow_scan_sU-1000-ais.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/biflow_scan_sU-250-ais.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/biflow_scan_sU-500-ais.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/biflow_scan_sU-dnn.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/biflow_sparta-100-ais.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/biflow_sparta-1000-ais.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/biflow_sparta-250-ais.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/biflow_sparta-500-ais.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/biflow_sparta-dnn.csv
+results/Experiment 5 - Corresponding Validator only and MeanShiftClustering/dataset.csv
+results/Experiment 5 - Day 1-5, 8-10/dataset.csv
+results/Experiment 5 - Day 1-5, 8-10/desc.txt
+results/Experiment 5 - Day 1-5, 8-10/dnn-detectors-1-10.csv
+results/Experiment 5 - Day 1-5, 8-10/dnn-detectors-1-100.csv
+results/Experiment 5 - Day 1-5, 8-10/dnn-detectors-1-1000.csv
+results/Experiment 5 - Day 1-5, 8-10/dnn-detectors-1-25.csv
+results/Experiment 5 - Day 1-5, 8-10/dnn-detectors-1-250.csv
+results/Experiment 5 - Day 1-5, 8-10/dnn-detectors-1-50.csv
+results/Experiment 5 - Day 1-5, 8-10/dnn-detectors-1-500.csv
+results/Experiment 5 - Day 1-5, 8-10/dnn.csv
+results/Experiment 6 - All RNNs, random detector generation/Benign-100-ais.csv
+results/Experiment 6 - All RNNs, random detector generation/Benign-1000-ais.csv
+results/Experiment 6 - All RNNs, random detector generation/Benign-250-ais.csv
+results/Experiment 6 - All RNNs, random detector generation/Benign-500-ais.csv
+results/Experiment 6 - All RNNs, random detector generation/biflow_mqtt_bruteforce-100-ais.csv
+results/Experiment 6 - All RNNs, random detector generation/biflow_mqtt_bruteforce-1000-ais.csv
+results/Experiment 6 - All RNNs, random detector generation/biflow_mqtt_bruteforce-250-ais.csv
+results/Experiment 6 - All RNNs, random detector generation/biflow_mqtt_bruteforce-500-ais.csv
+results/Experiment 6 - All RNNs, random detector generation/biflow_mqtt_bruteforce-dnn.csv
+results/Experiment 6 - All RNNs, random detector generation/biflow_scan_A-100-ais.csv
+results/Experiment 6 - All RNNs, random detector generation/biflow_scan_A-1000-ais.csv
+results/Experiment 6 - All RNNs, random detector generation/biflow_scan_A-250-ais.csv
+results/Experiment 6 - All RNNs, random detector generation/biflow_scan_A-500-ais.csv
+results/Experiment 6 - All RNNs, random detector generation/biflow_scan_A-dnn.csv
+results/Experiment 6 - All RNNs, random detector generation/biflow_scan_sU-100-ais.csv
+results/Experiment 6 - All RNNs, random detector generation/biflow_scan_sU-1000-ais.csv
+results/Experiment 6 - All RNNs, random detector generation/biflow_scan_sU-250-ais.csv
+results/Experiment 6 - All RNNs, random detector generation/biflow_scan_sU-500-ais.csv
+results/Experiment 6 - All RNNs, random detector generation/biflow_scan_sU-dnn.csv
+results/Experiment 6 - All RNNs, random detector generation/biflow_sparta-100-ais.csv
+results/Experiment 6 - All RNNs, random detector generation/biflow_sparta-1000-ais.csv
+results/Experiment 6 - All RNNs, random detector generation/biflow_sparta-250-ais.csv
+results/Experiment 6 - All RNNs, random detector generation/biflow_sparta-500-ais.csv
+results/Experiment 6 - All RNNs, random detector generation/biflow_sparta-dnn.csv
+results/Experiment 6 - All RNNs, random detector generation/dataset.csv
+results/Experiment 6 - Day 1/dataset.csv
+results/Experiment 6 - Day 1/desc.txt
+results/Experiment 6 - Day 1/dnn-detectors-FTP-BruteForce-10000.csv
+results/Experiment 6 - Day 1/dnn-detectors-FTP-BruteForce-100000.csv
+results/Experiment 6 - Day 1/dnn-detectors-FTP-BruteForce-25000.csv
+results/Experiment 6 - Day 1/dnn-detectors-FTP-BruteForce-50000.csv
+results/Experiment 6 - Day 1/dnn-detectors-SSH-Bruteforce-10000.csv
+results/Experiment 6 - Day 1/dnn-detectors-SSH-Bruteforce-100000.csv
+results/Experiment 6 - Day 1/dnn-detectors-SSH-Bruteforce-25000.csv
+results/Experiment 6 - Day 1/dnn-detectors-SSH-Bruteforce-50000.csv
+results/Experiment 6 - Day 1/FTP-BruteForce-dnn.csv
+results/Experiment 6 - Day 1/SSH-Bruteforce-dnn.csv
+results/Experiment 7 - All RNNs, random detector generation/Benign-1000-ais.csv
+results/Experiment 7 - All RNNs, random detector generation/Benign-10000-ais.csv
+results/Experiment 7 - All RNNs, random detector generation/Benign-2500-ais.csv
+results/Experiment 7 - All RNNs, random detector generation/Benign-5000-ais.csv
+results/Experiment 7 - All RNNs, random detector generation/biflow_mqtt_bruteforce-1000-ais.csv
+results/Experiment 7 - All RNNs, random detector generation/biflow_mqtt_bruteforce-10000-ais.csv
+results/Experiment 7 - All RNNs, random detector generation/biflow_mqtt_bruteforce-2500-ais.csv
+results/Experiment 7 - All RNNs, random detector generation/biflow_mqtt_bruteforce-5000-ais.csv
+results/Experiment 7 - All RNNs, random detector generation/biflow_mqtt_bruteforce-dnn.csv
+results/Experiment 7 - All RNNs, random detector generation/biflow_scan_A-1000-ais.csv
+results/Experiment 7 - All RNNs, random detector generation/biflow_scan_A-10000-ais.csv
+results/Experiment 7 - All RNNs, random detector generation/biflow_scan_A-2500-ais.csv
+results/Experiment 7 - All RNNs, random detector generation/biflow_scan_A-5000-ais.csv
+results/Experiment 7 - All RNNs, random detector generation/biflow_scan_A-dnn.csv
+results/Experiment 7 - All RNNs, random detector generation/biflow_scan_sU-1000-ais.csv
+results/Experiment 7 - All RNNs, random detector generation/biflow_scan_sU-10000-ais.csv
+results/Experiment 7 - All RNNs, random detector generation/biflow_scan_sU-2500-ais.csv
+results/Experiment 7 - All RNNs, random detector generation/biflow_scan_sU-5000-ais.csv
+results/Experiment 7 - All RNNs, random detector generation/biflow_scan_sU-dnn.csv
+results/Experiment 7 - All RNNs, random detector generation/biflow_sparta-1000-ais.csv
+results/Experiment 7 - All RNNs, random detector generation/biflow_sparta-10000-ais.csv
+results/Experiment 7 - All RNNs, random detector generation/biflow_sparta-2500-ais.csv
+results/Experiment 7 - All RNNs, random detector generation/biflow_sparta-5000-ais.csv
+results/Experiment 7 - All RNNs, random detector generation/biflow_sparta-dnn.csv
+results/Experiment 7 - All RNNs, random detector generation/dataset.csv
+results/Experiment 7 - Day 1/dataset.csv
+results/Experiment 7 - Day 1/dnn-detectors-FTP-BruteForce-1000.csv
+results/Experiment 7 - Day 1/dnn-detectors-FTP-BruteForce-10000.csv
+results/Experiment 7 - Day 1/dnn-detectors-FTP-BruteForce-2500.csv
+results/Experiment 7 - Day 1/dnn-detectors-FTP-BruteForce-5000.csv
+results/Experiment 7 - Day 1/dnn-detectors-SSH-Bruteforce-1000.csv
+results/Experiment 7 - Day 1/dnn-detectors-SSH-Bruteforce-10000.csv
+results/Experiment 7 - Day 1/dnn-detectors-SSH-Bruteforce-2500.csv
+results/Experiment 7 - Day 1/dnn-detectors-SSH-Bruteforce-5000.csv
+results/Experiment 7 - Day 1/FTP-BruteForce-dnn.csv
+results/Experiment 7 - Day 1/SSH-Bruteforce-dnn.csv
+results/Experiment 8 - Day 2/dataset.csv
+results/Experiment 8 - Day 2/dnn-detectors-DoS attacks-GoldenEye-1000.csv
+results/Experiment 8 - Day 2/dnn-detectors-DoS attacks-GoldenEye-10000.csv
+results/Experiment 8 - Day 2/dnn-detectors-DoS attacks-GoldenEye-2500.csv
+results/Experiment 8 - Day 2/dnn-detectors-DoS attacks-GoldenEye-5000.csv
+results/Experiment 8 - Day 2/dnn-detectors-DoS attacks-Slowloris-1000.csv
+results/Experiment 8 - Day 2/dnn-detectors-DoS attacks-Slowloris-10000.csv
+results/Experiment 8 - Day 2/dnn-detectors-DoS attacks-Slowloris-2500.csv
+results/Experiment 8 - Day 2/dnn-detectors-DoS attacks-Slowloris-5000.csv
+results/Experiment 8 - Day 2/DoS attacks-GoldenEye-dnn.csv
+results/Experiment 8 - Day 2/DoS attacks-Slowloris-dnn.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/Benign-100-ais.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/Benign-1000-ais.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/Benign-250-ais.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/Benign-500-ais.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/biflow_mqtt_bruteforce-100-ais.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/biflow_mqtt_bruteforce-1000-ais.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/biflow_mqtt_bruteforce-250-ais.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/biflow_mqtt_bruteforce-500-ais.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/biflow_mqtt_bruteforce-dnn.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/biflow_scan_A-100-ais.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/biflow_scan_A-1000-ais.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/biflow_scan_A-250-ais.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/biflow_scan_A-500-ais.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/biflow_scan_A-dnn.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/biflow_scan_sU-100-ais.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/biflow_scan_sU-1000-ais.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/biflow_scan_sU-250-ais.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/biflow_scan_sU-500-ais.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/biflow_scan_sU-dnn.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/biflow_sparta-100-ais.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/biflow_sparta-1000-ais.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/biflow_sparta-250-ais.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/biflow_sparta-500-ais.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/biflow_sparta-dnn.csv
+results/Experiment 8 - Median and Mad per type, random detector type generation, unique rvalue per type, features with value 0 included/dataset.csv
+results/Experiment 9 - Day 3/dataset.csv
+results/Experiment 9 - Day 3/dnn-detectors-DoS attacks-Hulk-1000.csv
+results/Experiment 9 - Day 3/dnn-detectors-DoS attacks-Hulk-10000.csv
+results/Experiment 9 - Day 3/dnn-detectors-DoS attacks-Hulk-2500.csv
+results/Experiment 9 - Day 3/dnn-detectors-DoS attacks-Hulk-5000.csv
+results/Experiment 9 - Day 3/dnn-detectors-DoS attacks-SlowHTTPTest-1000.csv
+results/Experiment 9 - Day 3/dnn-detectors-DoS attacks-SlowHTTPTest-10000.csv
+results/Experiment 9 - Day 3/dnn-detectors-DoS attacks-SlowHTTPTest-2500.csv
+results/Experiment 9 - Day 3/dnn-detectors-DoS attacks-SlowHTTPTest-5000.csv
+results/Experiment 9 - Day 3/DoS attacks-Hulk-dnn.csv
+results/Experiment 9 - Day 3/DoS attacks-SlowHTTPTest-dnn.csv
+results/test/dnn-detectors-FTP-BruteForce-100.csv
+results/test/dnn-detectors-FTP-BruteForce-1000.csv
+results/test/dnn-detectors-FTP-BruteForce-250.csv
+results/test/dnn-detectors-FTP-BruteForce-500.csv
+results/test/dnn-detectors-SSH-Bruteforce-100.csv
+results/test/dnn-detectors-SSH-Bruteforce-1000.csv
+results/test/dnn-detectors-SSH-Bruteforce-250.csv
+results/test/dnn-detectors-SSH-Bruteforce-500.csv
+results/test/FTP-BruteForce-dnn.csv
+results/test/SSH-Bruteforce-dnn.csv
+data/biflow_mqtt_bruteforce.csv

@@ -10,6 +10,7 @@ import statistics
 from scipy import stats
 
 DATA_SET = {}
+RNN_DATA_SET = {}
 RNN_FOLDS_X = {}
 RNN_FOLDS_Y = {}
 DEVICE_FOLDS_X = {}
@@ -52,7 +53,31 @@ def read_from_file(w, path):
 
     print('Loading data set finished')
     partition_based_on_ip(ds)
+    partition_based_on_mal_type(ds)
     create_folds()
+
+
+def partition_based_on_mal_type(ds):
+    global RNN_DATA_SET
+    global NUM_FEATURES
+
+    x = normalize_data_set(ds)
+    y = convert_labels(ds)
+
+    for i in range(len(ds)):
+        sample = ds[i]
+        label = sample[-1]
+
+        if label not in RNN_DATA_SET:
+            RNN_DATA_SET[label] = []
+
+        values = list(x[i])
+
+        # Add encoded label to normalized values
+        encoded_label = list(y[i]).index(max(list(y[i])))
+        values.append(encoded_label)
+
+        RNN_DATA_SET[label].append(values)
 
 
 def partition_based_on_ip(ds):
@@ -96,8 +121,6 @@ def partition_based_on_ip(ds):
 
         DATA_SET[src_ip][label].append(values)
         DATA_SET[dst_ip][label].append(dup_values)
-
-    del ds
 
 
 def normalize_data_set(ds):
@@ -145,6 +168,7 @@ def convert_labels(ds):
 
 def create_folds():
     global DATA_SET
+    global RNN_DATA_SET
     global DEVICE_FOLDS_X
     global DEVICE_FOLDS_Y
     global RNN_FOLDS_X
@@ -154,9 +178,7 @@ def create_folds():
 
     remove_exclusion_from_data_set()
     check_min_data_set()
-    calculate_label_min_max_per_type()
-
-    total_count = {}
+    calculate_label_min_max()
 
     for ip_addr, ip_dict in DATA_SET.items():
         DEVICE_FOLDS_Y[ip_addr] = {}
@@ -167,18 +189,14 @@ def create_folds():
                 total = len(samples)
                 samples_per_fold = int(total / NUM_FOLDS)
 
-                if label not in RNN_FOLDS_Y:
-                    RNN_FOLDS_Y[label] = {}
-                    RNN_FOLDS_X[label] = {}
-
                 for fold_num in range(NUM_FOLDS):
                     if fold_num not in DEVICE_FOLDS_Y[ip_addr]:
                         DEVICE_FOLDS_Y[ip_addr][fold_num] = []
                         DEVICE_FOLDS_X[ip_addr][fold_num] = []
 
-                    if fold_num not in RNN_FOLDS_Y[label]:
-                        RNN_FOLDS_Y[label][fold_num] = []
-                        RNN_FOLDS_X[label][fold_num] = []
+                    if fold_num not in RNN_FOLDS_Y:
+                        RNN_FOLDS_Y[fold_num] = []
+                        RNN_FOLDS_X[fold_num] = []
 
                     for x in range(samples_per_fold):
                         # Get a random index to pop from the sample list
@@ -188,13 +206,11 @@ def create_folds():
                         s = samples.pop(index)
                         encoded_label = s[-1]
                         s = s[:-1]
-                        s_2 = s.copy()
 
                         benign_index = random.randrange(len(ip_dict['Benign']))
                         benign_s = ip_dict['Benign'][benign_index]
                         encoded_benign_label = benign_s[-1]
                         benign_s = benign_s[:-1]
-                        benign_s_2 = benign_s.copy()
 
                         # Add the sample and the duplicate to the corresponding fold dictionaries
                         DEVICE_FOLDS_X[ip_addr][fold_num].append(s)
@@ -202,10 +218,29 @@ def create_folds():
                         DEVICE_FOLDS_X[ip_addr][fold_num].append(benign_s)
                         DEVICE_FOLDS_Y[ip_addr][fold_num].append(encoded_benign_label)
 
-                        RNN_FOLDS_X[label][fold_num].append(s_2)
-                        RNN_FOLDS_Y[label][fold_num].append(1)
-                        RNN_FOLDS_X[label][fold_num].append(benign_s_2)
-                        RNN_FOLDS_Y[label][fold_num].append(0)
+    for label, samples in RNN_DATA_SET.items():
+        if label != 'Benign':
+            samples_per_fold = int(len(samples)/NUM_FOLDS)
+
+            for fold_num in range(NUM_FOLDS):
+                for x in range(samples_per_fold):
+                    # Get a random index to pop from the sample list
+                    index = random.randrange(len(samples))
+
+                    # Create a duplicate of the sample for the RNN
+                    s = samples.pop(index)
+                    encoded_label = s[-1]
+                    s = s[:-1]
+
+                    benign_index = random.randrange(len(RNN_DATA_SET['Benign']))
+                    benign_s = RNN_DATA_SET['Benign'][benign_index]
+                    encoded_benign_label = benign_s[-1]
+                    benign_s = benign_s[:-1]
+
+                    RNN_FOLDS_X[fold_num].append(s)
+                    RNN_FOLDS_Y[fold_num].append(encoded_label)
+                    RNN_FOLDS_X[fold_num].append(benign_s)
+                    RNN_FOLDS_Y[fold_num].append(encoded_benign_label)
 
 
 def remove_exclusion_from_data_set():
@@ -248,45 +283,14 @@ def calculate_label_min_max():
             MIN_MAX_FEATURES[ip_addr].append((min_val, max_val))
 
 
-def calculate_label_min_max_per_type():
-    global DATA_SET
-    global MIN_MAX_FEATURES
-
-    samples_by_type = {}
-    for ip_addr, value in DATA_SET.items():
-
-        for samp_type, samples in value.items():
-            if samp_type not in samples_by_type:
-                samples_by_type[samp_type] = []
-
-            samples_by_type[samp_type].extend(samples[:][:-1])
-
-    for samp_type, samples in samples_by_type.items():
-        if samp_type not in MIN_MAX_FEATURES:
-            MIN_MAX_FEATURES[samp_type] = []
-
-        for idx in zip(*samples):
-            median = statistics.median(idx)
-            min_val = min(idx)
-            max_val = max(idx)
-            mad = stats.median_absolute_deviation(idx)
-
-            MIN_MAX_FEATURES[samp_type].append((median, mad))
-
-
 def get_min_max_features():
     global MIN_MAX_FEATURES
     return MIN_MAX_FEATURES
 
 
-def get_min_max_features_by_device(device):
+def get_min_max_features(device):
     global MIN_MAX_FEATURES
     return MIN_MAX_FEATURES[device]
-
-
-def get_min_max_features_by_type(sample_type):
-    global MIN_MAX_FEATURES
-    return MIN_MAX_FEATURES[sample_type]
 
 
 def get_device_folds():
