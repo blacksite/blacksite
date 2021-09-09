@@ -1,6 +1,6 @@
-from concurrent.futures import ThreadPoolExecutor, wait, as_completed
+from concurrent.futures import ThreadPoolExecutor
 import threading
-from models import NeuralNetworkNSA
+from experimental.exp_models import NeuralNetworkNSA
 import numpy as np
 
 MAX_DETECTORS = 1000
