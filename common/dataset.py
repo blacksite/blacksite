@@ -14,8 +14,10 @@ class DataSet:
     def __init__(self):
         self.lock = threading.Lock()
         self.data_set = []
-        self.instances_x = {}
-        self.instances_y = {}
+        self.ais_instances_x = []
+        self.ais_instances_y = []
+        self.dnn_instances_x = {}
+        self.dnn_instances_y = {}
         self.number_of_features = 76
         self.number_of_classes = 0
         self.mean_mad = []
@@ -103,39 +105,73 @@ class DataSet:
         encoder.fit(y)
         self.classes = encoder.classes_
         y_encoded = encoder.transform(y)
-        # convert integers to dummy variables (i.e. one hot encoded)
-        y_encoded = np_utils.to_categorical(y_encoded)
 
-        self.number_of_classes = len(y_encoded[0])
+        self.number_of_classes = len(y_encoded)
+
+        local_instances_x = {}
+        local_instances_y = {}
 
         for i in range(len(y)):
-            if y[i] not in self.instances_x:
-                self.instances_x[y[i]] = []
-                self.instances_y[y[i]] = []
-            self.instances_x[y[i]].append(x_normalized[i])
+            if y[i] not in local_instances_x:
+                local_instances_x[y[i]] = []
+                local_instances_y[y[i]] = []
+            local_instances_x[y[i]].append(x_normalized[i])
+            local_instances_y[y[i]].append(y_encoded[i])
 
-            if y[i] == 'Benign':
-                self.instances_y[y[i]].append(0)
+        self.generate_min_max_list(local_instances_x)
+
+        # take only 10% of each type for the ais validation samples,
+        # not to be less than 1000
+        # not to exceed 10000 samples
+        for key, samples in local_instances_x.items():
+            size = len(samples)
+            labels = local_instances_y[key]
+            if size < 1000:
+                self.ais_instances_x.extend(samples)
+                self.ais_instances_y.extend(labels)
             else:
-                self.instances_y[y[i]].append(1)
+                cutoff = int(len(samples) * 0.1)
+                if cutoff < 1000:
+                    cutoff = 1000
+                elif cutoff > 10000:
+                    cutoff = 10000
+                self.ais_instances_x.extend(samples[:cutoff])
+                self.ais_instances_y.extend(labels[:cutoff])
 
-        self.generate_min_max_list()
+        # Partition dataset for dnn training,
+        # not to be less than 1000
+        # not to exceed 10000 samples
+        for key, samples in local_instances_x.items():
+            if key != 'Benign':  # and key != 'FTP-BruteForce':
+                if key not in self.dnn_instances_x:
+                    self.dnn_instances_x[key] = []
+                    self.dnn_instances_y[key] = []
 
-        # Add random benign sample to each malicious instance data set
-        for key, value in self.instances_x.items():
-            if key != 'Benign':
-                current_length = len(value)
-                for i in range(current_length):
-                    index = random.randrange(len(self.instances_x['Benign']) - 1)
+                size = len(samples)
+                if size < 1000:
+                    cutoff = len(samples)
+                else:
+                    cutoff = int(len(samples) * 0.1)
+                    if cutoff < 1000:
+                        cutoff = 1000
+                    elif cutoff > 10000:
+                        cutoff = 10000
 
-                    benign_sample = self.instances_x['Benign'].pop(index)
-                    label = self.instances_y['Benign'].pop(index)
-                    self.instances_x[key].append(benign_sample)
-                    self.instances_y[key].append(label)
+                # for the given malicious key, determine how many instances I need per fold
+                for i in range(cutoff):
+                    # Get a random index to pop from the sample list
+                    index = random.randrange(len(samples))
 
-        # Delete the Benign lists in the instances_x and instances_y dictionaries
-        del self.instances_x['Benign']
-        del self.instances_y['Benign']
+                    # Add the random sample to the current partition
+                    self.dnn_instances_x[key].append(samples.pop(index))
+                    self.dnn_instances_y[key].append(1)
+
+                    # Get a random index to pop from the sample list
+                    index = random.randrange(len(local_instances_x['Benign']))
+
+                    # Add the random sample to the current partition
+                    self.dnn_instances_x[key].append(local_instances_x['Benign'].pop(index))
+                    self.dnn_instances_y[key].append(0)
 
     def add_benign_samples_from_file(self, x, y):
         filename = '../data/benign.csv'
@@ -149,10 +185,10 @@ class DataSet:
             x.append(np.array(self.replace_nan_inf(d[7:-1])))
             y.append('Benign')
 
-    def generate_min_max_list(self):
+    def generate_min_max_list(self, local_instances_x):
 
         num_mal = 0
-        for key, value in self.instances_x.items():
+        for key, value in local_instances_x.items():
             if key != 'Benign':
                 temp = []
                 num_mal = num_mal + len(value)
@@ -182,3 +218,9 @@ class DataSet:
             else:
                 x[i] = val
         return x
+
+    def get_classes(self):
+        return self.classes
+
+    def get_min_max_features_by_type(self, key):
+        return self.min_max[key]

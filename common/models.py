@@ -1,6 +1,7 @@
 import math
 import queue
 import sys
+import os
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, wait
@@ -39,11 +40,9 @@ class NeuralNetworkNSA:
         self.detector_objects = []
         self.data_set = None
         self.validator = None
-        self.device = None
 
-    def fit(self, x, y, device, data_set, validator, number_of_detectors):
+    def fit(self, x, y, data_set, validator, number_of_detectors):
         # print("Evaluating")
-        self.device = device
         self.data_set = data_set
         self.validator = validator
         print("Number of Detectors: " + str(number_of_detectors))
@@ -74,9 +73,10 @@ class NeuralNetworkNSA:
         start = time.time()
         threads = list()
         for i in range(10):
-            x = threading.Thread(target=self.generate_detectors_thread)
-            threads.append(x)
-            x.start()
+            self.generate_detectors_thread()
+            # x = threading.Thread(target=self.generate_detectors_thread)
+            # threads.append(x)
+            # x.start()
         threading.Thread(target=self.transfer_detector_values).start()
         self.queue.join()
 
@@ -133,7 +133,7 @@ class NeuralNetworkNSA:
         # If the the shapes fo x and y don't match, return
         if number_of_samples != y.shape[0]:
             print("Shape of x does not match shape of y")
-            sys.exit(0)
+            os._exit(0)
 
         # Transpose the x samples into a row-major 1D array of float32
         samples = x.ravel()
@@ -222,7 +222,7 @@ class NeuralNetworkNSA:
         # If the the shapes fo x and y don't match, return
         if number_of_samples != y.shape[0]:
             print("Shape of x does not match shape of y")
-            sys.exit(0)
+            os._exit(0)
 
         # Transpose the x samples into a row-major 1D array of float32
         samples = x.ravel()

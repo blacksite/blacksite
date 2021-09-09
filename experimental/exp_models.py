@@ -167,7 +167,7 @@ class NeuralNetworkNSA:
         # If the the shapes fo x and y don't match, return
         if number_of_samples != y.shape[0]:
             print("Shape of x does not match shape of y")
-            sys.exit(0)
+            os._exit(0)
 
         # Transpose the x samples into a row-major 1D array of float32
         samples = x.ravel()
@@ -256,7 +256,7 @@ class NeuralNetworkNSA:
         # If the the shapes fo x and y don't match, return
         if number_of_samples != y.shape[0]:
             print("Shape of x does not match shape of y")
-            sys.exit(0)
+            os._exit(0)
 
         # Transpose the x samples into a row-major 1D array of float32
         samples = x.ravel()

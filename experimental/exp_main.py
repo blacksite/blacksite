@@ -1,4 +1,4 @@
-from bin import grizzly, panda
+from experimental import exp_grizzly, exp_panda
 import sys
 from experimental import exp_dataset
 from os import path
@@ -59,8 +59,8 @@ def start_ind_experiment():
     w_dataset = open(result_directory + "/dataset.csv", "w")
     exp_dataset.read_from_mqtt_file(w_dataset, filename)
 
-    grizzly.set_common(detectors, validated_instances, suspicious_instances, exp_dataset)
-    panda.set_common(detectors, new_instances, suspicious_instances, exp_dataset)
+    exp_grizzly.set_common(exp_dataset)
+    exp_panda.set_common(exp_dataset)
 
     num_detectors = [100, 250, 500, 1000]
 
@@ -83,15 +83,15 @@ def start_ind_experiment():
         for i in range(exp_dataset.KFOLDS):
 
             try:
-                grizzly.evaluate_ind_dnn(w_dnn, i, key)
-                panda.initialize_model()
+                exp_grizzly.evaluate_ind_dnn(w_dnn, i, key)
+                exp_panda.initialize_model()
 
                 for n in num_detectors:
-                    panda.evaluate_ind_dnn(writers[key + ' ' + str(n)], grizzly, i, key, n)
+                    exp_panda.evaluate_ind_dnn(writers[key + ' ' + str(n)], exp_grizzly, i, key, n)
 
             except Exception as e:
                 logging.error(e)
-                sys.exit(-1)
+                os._exit(-1)
 
     end = time.time() - start
 

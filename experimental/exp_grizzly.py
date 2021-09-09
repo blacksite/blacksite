@@ -25,16 +25,11 @@ DNN = None
 CURRENT_DATASET_SIZE = None
 
 
-def set_common(detectors, validated_instances, suspicious_instances, dataset):
-    global DETECTORS
-    global VALIDATED_INSTANCES
-    global SUSPICIOUS_INSTANCES
+def set_common(dataset):
+
     global DATASET
     global CURRENT_DATASET_SIZE
 
-    DETECTORS = detectors
-    VALIDATED_INSTANCES = validated_instances
-    SUSPICIOUS_INSTANCES = suspicious_instances
     DATASET = dataset
     CURRENT_DATASET_SIZE = DATASET.size()
 

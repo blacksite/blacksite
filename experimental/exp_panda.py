@@ -26,16 +26,10 @@ LOCK = threading.Lock()
 model = NeuralNetworkNSA()
 
 
-def set_common(detectors, new_instances, suspicious_instances, dataset):
-    global DETECTORS
-    global NEW_INSTANCES
-    global SUSPICIOUS_INSTANCES
-    global DATASET
-    global NUM_PARTITIONED_THREADS
+def set_common(dataset):
 
-    DETECTORS = detectors
-    NEW_INSTANCES = new_instances
-    SUSPICIOUS_INSTANCES = suspicious_instances
+    global DATASET
+
     DATASET = dataset
 
 
